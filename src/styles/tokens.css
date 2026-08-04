@@ -1,0 +1,162 @@
+/* Design tokens sourced from davidwhyte.md, applied as a light theme.
+   The source palette lists `color.surface.raised=#e7e7e2` and
+   `color.text.tertiary=#a94c21`; those become the page surface and the accent.
+   Font sizes are rebuilt on a 1.25 modular scale — the scraped values
+   (0.87px–16px) were sub-legible and fail WCAG 2.2 AA text sizing. */
+
+:root {
+  /* One page-wide surface. Sections are separated by rules and spacing rather
+     than by shifts in background tone — only the brand band breaks it. */
+  --color-surface-base: #fefefe;
+  --color-surface-elevated: #fefefe;
+  --color-surface-sunken: #fefefe;
+
+  --color-text-primary: #17140f;
+  --color-text-secondary: rgba(23, 20, 15, 0.74);
+  --color-text-muted: rgba(23, 20, 15, 0.55);
+  --color-text-accent: #a94c21;
+  --color-text-on-accent: #ffffff;
+
+  --color-border-muted: rgba(23, 20, 15, 0.14);
+  --color-border-hover: rgba(23, 20, 15, 0.3);
+  --color-border-strong: rgba(169, 76, 33, 0.45);
+  --color-focus-ring: #a94c21;
+
+  --color-accent-hover: #8f3f1a;
+  --color-accent-tint-weak: rgba(169, 76, 33, 0.05);
+  --color-accent-tint-soft: rgba(169, 76, 33, 0.1);
+  --color-accent-tint-medium: rgba(169, 76, 33, 0.16);
+  --color-accent-tint-strong: rgba(169, 76, 33, 0.24);
+
+  /* Chips and captions that sit on top of photographs. */
+  --color-scrim: rgba(255, 255, 255, 0.9);
+  --color-scrim-gradient: rgba(23, 20, 15, 0.82);
+  --color-scrim-text: #ffffff;
+  --color-media-placeholder: #dededa;
+
+  --color-field-surface: #ffffff;
+  --color-danger: #b3301c;
+  --color-danger-border: #c85b48;
+
+  /* Recolors the flat single-colour source PNGs to --color-text-accent. */
+  --icon-accent-filter: brightness(0) saturate(100%) invert(29%) sepia(45%)
+    saturate(1815%) hue-rotate(354deg) brightness(93%) contrast(92%);
+
+  --font-family-primary: 'Palanquin', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  --font-family-display: 'Asar', 'Roobert', 'Inter', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.25rem;
+  --font-size-4xl: clamp(2.5rem, 6vw, 4.5rem);
+
+  --font-weight-base: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.05;
+  --line-height-snug: 1.25;
+  --line-height-base: 1.6;
+  --letter-spacing-tight: -0.03em;
+  --letter-spacing-wide: 0.16em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 140px;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(23, 20, 15, 0.05), 0 8px 24px rgba(23, 20, 15, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(23, 20, 15, 0.06), 0 16px 40px rgba(23, 20, 15, 0.1);
+
+  --motion-duration-instant: 300ms;
+  --motion-duration-fast: 400ms;
+  --motion-duration-normal: 500ms;
+  --motion-duration-slow: 600ms;
+  --motion-duration-slower: 800ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --container-max: 1280px;
+  --container-pad: clamp(20px, 5vw, 72px);
+}
+
+/* Brand terracotta band. White clears 5.61:1 here, so unlike a brighter red
+   the small supporting text can stay white too. */
+.section--brand {
+  --color-surface-base: #a94c21;
+  --color-surface-elevated: #a94c21;
+  --color-surface-sunken: #93411c;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.9);
+  --color-text-muted: rgba(255, 255, 255, 0.9);
+  --color-text-accent: #f7d3ac;
+  --color-text-on-accent: #a94c21;
+
+  --color-border-muted: rgba(255, 255, 255, 0.28);
+  --color-border-hover: rgba(255, 255, 255, 0.5);
+  --color-border-strong: rgba(255, 255, 255, 0.5);
+  --color-focus-ring: #ffffff;
+
+  --icon-accent-filter: brightness(0) invert(1);
+
+  --shadow-card: none;
+  --shadow-card-hover: none;
+
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+}
+
+/* Inverted band. Redefines the palette tokens for its subtree, so every
+   component inside keeps working unchanged. Uses `color.text.inverse=#d8914c`
+   from davidwhyte.md as the accent, which needs a lighter surface than pure
+   black to stay above 4.5:1. */
+.section--invert {
+  --color-surface-base: #17140f;
+  --color-surface-elevated: #211d17;
+  --color-surface-sunken: #100e0a;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.74);
+  --color-text-muted: rgba(255, 255, 255, 0.58);
+  --color-text-accent: #d8914c;
+  --color-text-on-accent: #17140f;
+
+  --color-border-muted: rgba(255, 255, 255, 0.14);
+  --color-border-hover: rgba(255, 255, 255, 0.3);
+  --color-border-strong: rgba(216, 145, 76, 0.45);
+  --color-focus-ring: #d8914c;
+
+  --color-accent-hover: #eaa663;
+  --color-accent-tint-weak: rgba(216, 145, 76, 0.05);
+  --color-accent-tint-soft: rgba(216, 145, 76, 0.1);
+  --color-accent-tint-medium: rgba(216, 145, 76, 0.16);
+  --color-accent-tint-strong: rgba(216, 145, 76, 0.24);
+
+  --color-media-placeholder: #211d17;
+  --color-field-surface: rgba(255, 255, 255, 0.04);
+
+  --icon-accent-filter: brightness(0) saturate(100%) invert(70%) sepia(35%)
+    saturate(900%) hue-rotate(345deg);
+
+  --shadow-card: none;
+  --shadow-card-hover: none;
+
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+}

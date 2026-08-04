@@ -1,0 +1,105 @@
+.about {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative layer: two threads that draw themselves on scroll, with a thali
+   pinned to each at a fixed fraction along the curve. */
+.about__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.about__threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Lets the thalis, which are centred on the curve, sit over the line rather
+     than the line cutting across them. */
+  z-index: 0;
+}
+
+.about__threads path {
+  fill: none;
+  stroke: var(--color-text-accent);
+  /* The viewBox is stretched to the section box, which would squash the stroke
+     unevenly; this keeps it a true hairline at any section height. */
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+/* Registered so the pop can be eased as a real number rather than a string
+   swap; About.jsx animates this one scalar and nothing else. */
+@property --about-pop {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+/* Cutouts, not photo cards: no crop, no border-radius, no box — a shape-hugging
+   drop-shadow instead of a rectangular one, since a box-shadow would draw a
+   square behind a round plate.
+
+   `left`/`top` are written by About.jsx from the thread's real geometry, and
+   `translate: -50% -50%` centres the plate on that exact point.
+
+   Centring, tilt and scale all live in the *independent* transform properties,
+   and the pop drives `scale` through a custom property, so GSAP never touches
+   `transform` at all. It has to be this way: when GSAP owned the transform it
+   folded the percentage centring into a fixed pixel matrix at the moment the
+   lazy images still had zero height, which dropped every thali ~70px below its
+   thread. Percentages here re-resolve against the real box on every paint. */
+.about__float {
+  position: absolute;
+  z-index: 1;
+  width: clamp(110px, 13vw, 200px);
+  height: auto;
+  object-fit: contain;
+  translate: -50% -50%;
+  scale: var(--about-pop);
+  filter: drop-shadow(0 16px 28px rgba(23, 20, 15, 0.28));
+}
+
+@media (max-width: 1100px) {
+  .about__float {
+    width: clamp(84px, 11vw, 140px);
+  }
+}
+
+.about__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.about__title {
+  max-width: 14ch;
+  color: var(--color-text-accent);
+}
+
+.about__body {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  max-width: 58ch;
+}
+
+.about__paragraph {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 720px) {
+  .about__scene {
+    /* Keeps the thalis and threads out from behind the text once the column
+       fills the width. */
+    opacity: 0.45;
+  }
+}

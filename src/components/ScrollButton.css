@@ -1,0 +1,44 @@
+.scroll-button {
+  position: fixed;
+  right: clamp(16px, 3vw, 40px);
+  bottom: clamp(16px, 3vw, 40px);
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  /* Fixed over both near-white sections and the terracotta stats band. The
+     terracotta fill carries the light ones; the white ring separates it from
+     the band, where fill and background would otherwise match. */
+  background: #a94c21;
+  color: #ffffff;
+  box-shadow: 0 0 0 2px #ffffff, 0 6px 20px rgba(23, 20, 15, 0.24);
+  transition: background-color var(--motion-duration-instant) var(--motion-ease),
+    transform var(--motion-duration-instant) var(--motion-ease);
+}
+
+.scroll-button svg {
+  transition: transform var(--motion-duration-normal) var(--motion-ease);
+}
+
+.scroll-button--up svg {
+  transform: rotate(180deg);
+}
+
+.scroll-button:hover {
+  background: #8f3f1a;
+  transform: translateY(-3px);
+}
+
+.scroll-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .scroll-button {
+    width: 48px;
+    height: 48px;
+  }
+}

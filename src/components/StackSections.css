@@ -1,0 +1,37 @@
+@media (min-width: 1001px) {
+  .stack__item {
+    position: sticky;
+  }
+
+  /* Each card rests lower than the one before it, so the deck keeps a visible
+     edge instead of hiding the cards underneath completely. The 36px gaps are
+     wider than the old 20px because a covered card now drifts 20px down as it
+     is covered — a narrower gap would swallow the edge entirely. */
+  .stack__item:nth-child(1) {
+    top: 40px;
+  }
+
+  .stack__item:nth-child(2) {
+    top: 76px;
+  }
+
+  .stack__item:nth-child(3) {
+    top: 112px;
+  }
+
+  /* Sticky only works while the card is shorter than the viewport — otherwise
+     it pins with its lower half permanently below the fold. The default
+     --space-10 block padding puts the tallest of these three over 900px, and
+     the deeper offsets above need more headroom again. */
+  .stack .section {
+    padding-block: var(--space-7);
+  }
+
+  /* Every card is the same width. `.section--slab` already sets the inset, but
+     stating it here keeps the three locked together if a fill class ever
+     changes its own margin. */
+  .stack__item > .section {
+    margin-inline: clamp(8px, 1.6vw, 24px);
+    will-change: transform;
+  }
+}

@@ -1,0 +1,225 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-base);
+  line-height: var(--line-height-base);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+ul {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-family-display);
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.section {
+  padding-block: 90px;
+  position: relative;
+}
+
+/* Slab sections, after me&u: instead of one continuous page, the heavier
+   sections become large rounded panels inset from the viewport edge, each with
+   its own fill. That, not the type, is what stops consecutive sections from
+   reading the same. Radius is deliberately oversized — Spice Box runs 140px on
+   its "How it works" block, and the shape does most of the differentiating. */
+.section--slab {
+  margin-inline: clamp(8px, 1.6vw, 24px);
+  border-radius: clamp(28px, 5vw, 72px);
+  overflow: hidden;
+}
+
+/* Warm cream slab. The only tone besides the page white, the brand terracotta
+   and the ink — kept inside the existing accent hue rather than adding a
+   colour to the palette. */
+.section--tint {
+  --color-surface-base: #faf5f0;
+  --color-surface-elevated: #ffffff;
+  --color-media-placeholder: #efe6dd;
+
+  background: var(--color-surface-base);
+}
+
+/* SplitText masks a line by clipping its wrapper to the line box, which shaves
+   descenders on tight display line-heights. The padding gives them room. */
+.split-line {
+  padding-bottom: 0.12em;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--color-text-accent);
+}
+
+.section-title {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.section-lead {
+  margin-top: var(--space-5);
+  max-width: 62ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: transform var(--motion-duration-instant) var(--motion-ease),
+    background-color var(--motion-duration-instant) var(--motion-ease),
+    color var(--motion-duration-instant) var(--motion-ease),
+    border-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.btn--primary {
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn--ghost {
+  border: 1px solid var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.btn--ghost:hover {
+  border-color: var(--color-text-accent);
+  color: var(--color-text-accent);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 200;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+  border-radius: var(--radius-sm);
+  transform: translateY(-200%);
+  transition: transform var(--motion-duration-instant) var(--motion-ease);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.reveal {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

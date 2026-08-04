@@ -1,0 +1,198 @@
+/* Glow card, matching the supplied source's values: radius 14, border 3,
+   spotlight size 200, a 12% grey backdrop, a 5px backdrop blur and a black drop
+   shadow.
+
+   Positioned with an ordinary scrolling background rather than
+   `background-attachment: fixed`: the source used `fixed` to share one
+   viewport-space light source across every card. Here each card tracks the
+   pointer relative to its own box (`--glow-x`/`--glow-y` are already px values
+   in that local space), so `scroll` — the default — is what's wanted, and it
+   sidesteps a real rendering bug found in testing: `fixed` attachment combined
+   with a calc()'d pixel position silently failed to paint at all, while
+   percentage positions painted fine. */
+
+/* Registered so it can be transitioned — an unregistered custom property is not
+   animatable, and the interior wash would snap on and off while the border
+   faded. */
+@property --glow-fill-opacity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.glow-card {
+  --glow-radius: 14;
+  --glow-border: 3;
+  --glow-size: 200;
+
+  /* Overwritten per instance by the glowColor preset. */
+  --glow-base: 220;
+  --glow-spread: 200;
+  --glow-saturation: 100;
+
+  /* The source leaves `--lightness` unset and leans on a different fallback in
+     each gradient: 70 for the card wash, 50 for the lit border. */
+  --glow-fill-lightness: 70;
+  --glow-edge-lightness: 50;
+
+  --glow-backdrop: hsl(0 0% 60% / 0.12);
+  --glow-fill-lit-opacity: 0.1;
+  --glow-edge-opacity: 1;
+  --glow-core-opacity: 1;
+  --glow-outer: 1;
+  --glow-fade: 180ms;
+
+  --glow-hue: calc(var(--glow-base) + (var(--glow-xp, 0.5) * var(--glow-spread)));
+  --glow-border-size: calc(var(--glow-border) * 1px);
+  --glow-diameter: calc(var(--glow-size) * 1px);
+  /* --glow-x/--glow-y arrive from JS already in px, local to this card. */
+  --glow-centre: var(--glow-x, 50%) var(--glow-y, 50%);
+  --glow-bleed: calc(100% + (2 * var(--glow-border-size)));
+
+  position: relative;
+  /* Establishes a stacking context. Without it the bloom's `z-index: -1` escapes
+     to the root and paints behind whatever sits behind the card. `isolation` does
+     this without putting the card itself on a layer. */
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 1rem;
+  padding: 1rem;
+  border: var(--glow-border-size) solid var(--glow-backdrop);
+  /* The source sets border-radius inline from --radius, which overrides its own
+     `rounded-2xl` class — so the box and the lit ring share one radius. */
+  border-radius: calc(var(--glow-radius) * 1px);
+  /* No `background-color` and no `box-shadow`: the card sits directly on the page
+     and only its hairline border and the pointer glow describe it. `--glow-backdrop`
+     is still what colours that border. */
+  /* Gated on hover. Registering the property makes it animatable, so the wash
+     fades with the border rather than snapping. Engines without @property
+     support just switch instantly, which is an acceptable fallback. */
+  --glow-fill-opacity: 0;
+  transition: --glow-fill-opacity var(--glow-fade) linear;
+  background-image: radial-gradient(
+    var(--glow-diameter) var(--glow-diameter) at var(--glow-centre),
+    hsl(
+        var(--glow-hue) calc(var(--glow-saturation) * 1%) calc(var(--glow-fill-lightness) * 1%) /
+        var(--glow-fill-opacity)
+      ),
+    transparent
+  );
+  background-repeat: no-repeat;
+  background-size: var(--glow-bleed) var(--glow-bleed);
+  backdrop-filter: blur(5px);
+  touch-action: none;
+}
+
+/* The lit border. Both pseudo-elements paint a gradient across the whole box and
+   then mask it down to the border ring, which is what makes the edge glow rather
+   than the whole card. */
+.glow-card::before,
+.glow-card::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--glow-border-size) * -1);
+  border: var(--glow-border-size) solid transparent;
+  border-radius: calc(var(--glow-radius) * 1px);
+  background-repeat: no-repeat;
+  background-size: var(--glow-bleed) var(--glow-bleed);
+  pointer-events: none;
+  /* Keeps only the border box: padding-box is subtracted from border-box. */
+  mask: linear-gradient(transparent, transparent), linear-gradient(#fff, #fff);
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  /* Off by default: only `.is-lit` (pointer inside this card) shows it. */
+  opacity: 0;
+  transition: opacity var(--glow-fade) linear;
+}
+
+.glow-card::before {
+  background-image: radial-gradient(
+    calc(var(--glow-diameter) * 0.75) calc(var(--glow-diameter) * 0.75) at var(--glow-centre),
+    hsl(
+        var(--glow-hue) calc(var(--glow-saturation) * 1%) calc(var(--glow-edge-lightness) * 1%) /
+        var(--glow-edge-opacity)
+      ),
+    transparent 100%
+  );
+  filter: brightness(2);
+}
+
+/* A smaller, whiter core so the edge reads as a hot highlight at the centre of
+   the spotlight rather than a flat wash of colour. */
+.glow-card::after {
+  background-image: radial-gradient(
+    calc(var(--glow-diameter) * 0.5) calc(var(--glow-diameter) * 0.5) at var(--glow-centre),
+    hsl(0 100% 100% / var(--glow-core-opacity)),
+    transparent 100%
+  );
+}
+
+/* Outer bloom: the same lit ring, heavily blurred and spilling outside the card.
+   Border width and blur scale off the border size exactly as the source's
+   `calc(var(--border-size) * 20)` and `blur(calc(var(--border-size) * 10))`. */
+.glow-card__bloom {
+  position: absolute;
+  inset: -10px;
+  z-index: -1;
+  border: 10px solid transparent;
+  border-radius: calc((var(--glow-radius) + 10) * 1px);
+  background-repeat: no-repeat;
+  background-size: var(--glow-bleed) var(--glow-bleed);
+  background-image: radial-gradient(
+    calc(var(--glow-diameter) * 0.75) calc(var(--glow-diameter) * 0.75) at var(--glow-centre),
+    hsl(
+        var(--glow-hue) calc(var(--glow-saturation) * 1%) calc(var(--glow-edge-lightness) * 1%) /
+        var(--glow-edge-opacity)
+      ),
+    transparent 100%
+  );
+  mask: linear-gradient(transparent, transparent), linear-gradient(#fff, #fff);
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  filter: blur(calc(var(--glow-border-size) * 10));
+  opacity: 0;
+  transition: opacity var(--glow-fade) linear;
+  pointer-events: none;
+  will-change: filter;
+}
+
+/* Lit only while the pointer is inside this card. The arc that lights is still
+   just the spotlight radius around the cursor — that is the gradient's own
+   falloff, not a separate mask. */
+.glow-card.is-lit {
+  --glow-fill-opacity: var(--glow-fill-lit-opacity);
+}
+
+.glow-card.is-lit::before,
+.glow-card.is-lit::after {
+  opacity: 1;
+}
+
+.glow-card.is-lit .glow-card__bloom {
+  opacity: var(--glow-outer);
+}
+
+/* The source's `touch-action: none` exists so pointer gestures are not stolen by
+   the browser — fine for a hover demo, but on a touch device it also blocks
+   panning, and four stacked 320px cards would trap the page scroll. There is no
+   hover to serve there anyway. */
+@media (hover: none) {
+  .glow-card {
+    touch-action: auto;
+  }
+}
+
+/* The glow is a pointer affordance and nothing else, so with reduced motion the
+   card falls back to a plain panel. */
+@media (prefers-reduced-motion: reduce) {
+  .glow-card {
+    background-image: none;
+  }
+
+  .glow-card::before,
+  .glow-card::after,
+  .glow-card__bloom {
+    display: none;
+  }
+}

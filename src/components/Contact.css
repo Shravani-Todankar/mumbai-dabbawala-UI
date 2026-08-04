@@ -1,0 +1,104 @@
+.contact__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.contact__details {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-7);
+}
+
+.contact__details dt {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+.contact__details dd {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.contact__details a {
+  transition: color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.contact__details a:hover {
+  color: var(--color-text-accent);
+}
+
+.contact__form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.contact__field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.contact__field label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.contact__field input,
+.contact__field textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-sm);
+  background: var(--color-field-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: var(--font-size-md);
+  transition: border-color var(--motion-duration-instant) var(--motion-ease),
+    background-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.contact__field textarea {
+  resize: vertical;
+  min-height: 132px;
+}
+
+.contact__field input:hover,
+.contact__field textarea:hover {
+  border-color: var(--color-border-hover);
+}
+
+.contact__field input:focus-visible,
+.contact__field textarea:focus-visible {
+  border-color: var(--color-text-accent);
+}
+
+.contact__field input[aria-invalid='true'],
+.contact__field textarea[aria-invalid='true'] {
+  border-color: var(--color-danger-border);
+}
+
+.contact__error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+.contact__status {
+  min-height: 1.5em;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-accent);
+}
+
+.contact__form .btn {
+  justify-self: start;
+}
+
+@media (max-width: 900px) {
+  .contact__grid {
+    grid-template-columns: 1fr;
+  }
+
+}

@@ -1,0 +1,23 @@
+.announce {
+  padding-block: var(--space-2);
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+  text-align: center;
+}
+
+.announce__text {
+  font-size: var(--font-size-sm);
+}
+
+/* White on #a94c21 measures 5.61:1, so the underline carries the affordance
+   rather than a colour change that would drop below AA. */
+.announce__link {
+  color: inherit;
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.announce__link:hover {
+  text-decoration-thickness: 2px;
+}

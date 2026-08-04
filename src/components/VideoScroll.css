@@ -1,0 +1,116 @@
+.video-scroll {
+  position: relative;
+  background: var(--color-surface-sunken);
+}
+
+.video-scroll__stage {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Shrinks/grows via the two custom properties, which VideoScroll.jsx writes
+   directly every scroll tick — plain property writes, not a GSAP tween, since
+   the whole effect is already keyed off ScrollTrigger's own progress value.
+   No transition: a scroll-linked value should never ease on its own, or it lags
+   behind the scrollbar. */
+.video-scroll__frame {
+  --v-inset-x: 6%;
+  --v-inset-y: 10%;
+  --v-radius: 32px;
+
+  position: absolute;
+  inset: var(--v-inset-y) var(--v-inset-x);
+  overflow: hidden;
+  border-radius: var(--v-radius);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.video-scroll__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--color-media-placeholder);
+}
+
+.video-scroll__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding-block: var(--space-9);
+  /* Hidden until the frame finishes expanding (VideoScroll.jsx fades this in
+     over expandT); a small inset card is too cramped for full-bleed type. */
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(23, 20, 15, 0.55) 0%,
+    rgba(23, 20, 15, 0.15) 35%,
+    rgba(23, 20, 15, 0.8) 100%
+  );
+  color: #ffffff;
+}
+
+.video-scroll__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: #e8b183;
+}
+
+.video-scroll__eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+}
+
+.video-scroll__title {
+  margin-top: var(--space-4);
+  max-width: 16ch;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.video-scroll__captions {
+  position: relative;
+  margin-top: var(--space-6);
+  min-height: 2.4em;
+}
+
+.video-scroll__caption {
+  position: absolute;
+  inset: 0 auto auto 0;
+  max-width: 30ch;
+  font-size: var(--font-size-xl);
+  color: rgba(255, 255, 255, 0.92);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-scroll__captions {
+    display: grid;
+    gap: var(--space-2);
+    min-height: 0;
+  }
+
+  .video-scroll__caption {
+    position: static;
+    opacity: 1;
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 720px) {
+  .video-scroll__caption {
+    font-size: var(--font-size-lg);
+  }
+}

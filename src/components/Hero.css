@@ -1,0 +1,171 @@
+.hero {
+  position: relative;
+  /* The header sits in flow above now rather than overlaying the hero, so the
+     top padding no longer has to clear it. */
+  padding-block: var(--space-7) var(--space-9);
+  overflow: hidden;
+}
+
+.hero__snow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* The canvas covers the whole hero — without this it would swallow clicks
+     on the CTA and the collage. */
+  pointer-events: none;
+}
+
+.hero__head,
+.hero__frame,
+.hero__foot {
+  position: relative;
+  z-index: 1;
+}
+
+/* Three beats stretched edge to edge. `space-between` on a wrapping flex row
+   keeps them on one line at desktop and stacks them cleanly below it. */
+.hero__title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-5);
+  margin-top: var(--space-5);
+  /* Sized so all three beats clear one line at desktop — "Deliver it." is the
+     long one, and wrapping it turns `space-between` into a hole. */
+  font-size: clamp(2.75rem, 6.1vw, 5.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+/* SplitText replaces each beat's text with block line wrappers, which makes the
+   flex item shrinkable — without this the beats break mid-phrase ("PACK / IT."). */
+.hero__beat {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.hero__beat:last-child {
+  color: var(--color-text-accent);
+}
+
+.hero__frame {
+  position: relative;
+  margin-top: var(--space-7);
+}
+
+/* Full-bleed: the strip escapes the container and runs the whole viewport. */
+.hero__strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  width: 100%;
+  padding-inline: var(--space-2);
+}
+
+.hero__tile {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+/* The middle tile leads — a taller centre gives the strip a horizon. */
+.hero__tile:nth-child(3) {
+  aspect-ratio: 3 / 5;
+  margin-top: calc(var(--space-6) * -1);
+}
+
+.hero__sticker {
+  position: absolute;
+  top: calc(var(--space-7) * -1);
+  right: clamp(16px, 6vw, 96px);
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  width: clamp(112px, 13vw, 168px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+  text-align: center;
+  transform: rotate(-12deg);
+  box-shadow: 0 12px 32px rgba(23, 20, 15, 0.24);
+}
+
+.hero__sticker-top,
+.hero__sticker-bottom {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.hero__sticker-big {
+  font-size: clamp(1rem, 1.5vw, 1.375rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.hero__foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto;
+  align-items: end;
+  gap: var(--space-6) var(--space-7);
+  margin-top: var(--space-7);
+}
+
+.hero__lead {
+  max-width: 52ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.hero__foot .press-strip {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .hero__title {
+    justify-content: flex-start;
+  }
+
+  .hero__strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Two tiles too many for three columns — drop the tail rather than shrink
+     everything below a readable size. */
+  .hero__tile:nth-child(n + 4) {
+    display: none;
+  }
+
+  .hero__foot {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero__title {
+    display: block;
+  }
+
+  .hero__strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero__tile:nth-child(n + 3) {
+    display: none;
+  }
+
+  .hero__tile:nth-child(3) {
+    margin-top: 0;
+  }
+
+  .hero__sticker {
+    top: calc(var(--space-6) * -1);
+  }
+}

@@ -1,0 +1,94 @@
+/* Statement left, lead right — the split head is the me&u device, and it also
+   stops the section opening with the same centred eyebrow stack as Process. */
+.services__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--space-7);
+}
+
+.services__kicker {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+.services__statement {
+  margin-top: var(--space-4);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.services__lead {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+/* Compact tiles rather than the tall bordered columns this section used before:
+   on the dark slab a hairline grid reads as structure, not as boxes. */
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: var(--space-8);
+  background: var(--color-border-muted);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.services__card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--color-surface-base);
+  transition: background-color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.services__card:hover {
+  background: var(--color-surface-elevated);
+}
+
+.services__icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  /* Themes off `color` via the icon's own `fill="currentColor"` — the same
+     token-scope pattern as everything else on this ink slab, so it inherits
+     `.section--invert`'s amber accent with no per-surface filter needed. */
+  color: var(--color-text-accent);
+  transition: transform var(--motion-duration-fast) var(--motion-ease);
+}
+
+.services__card:hover .services__icon {
+  transform: translateY(-4px);
+}
+
+.services__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+@media (max-width: 1000px) {
+  .services__head {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .services__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .services__grid {
+    grid-template-columns: 1fr;
+  }
+}

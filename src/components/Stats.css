@@ -1,0 +1,68 @@
+/* The eyebrow is 12px, where the band's tinted accent gives only 3.97:1.
+   White clears 5.61:1; the tint stays on the larger "+" suffix. */
+.stats .eyebrow {
+  color: #ffffff;
+}
+
+.stats .eyebrow::before {
+  background: #ffffff;
+}
+
+/* One figure carries the section and the other three support it — the me&u
+   "The Numbers" hierarchy, in place of four equal cells. */
+.stats__lead {
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-7);
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.stats__lead-value {
+  font-size: clamp(3.5rem, 11vw, 10rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__lead-label {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+}
+
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-7);
+}
+
+.stats__value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__suffix {
+  color: var(--color-text-accent);
+}
+
+.stats__label {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 700px) {
+  .stats__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .stats__item:not(:first-child) {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-muted);
+  }
+}

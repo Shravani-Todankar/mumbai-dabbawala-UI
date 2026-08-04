@@ -1,0 +1,124 @@
+.promo {
+  overflow: hidden;
+}
+
+.promo__head {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.promo__title {
+  max-width: 16ch;
+  color: var(--color-text-accent);
+}
+
+.promo__intro {
+  margin-top: var(--space-5);
+  max-width: 52ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.promo__stage {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.promo__phone {
+  /* Wider than the old asset because the phone is now only about half the
+     image — the tiffin and backdrop circle take the rest. At 250px the handset
+     itself would have shrunk to ~110px. */
+  width: clamp(240px, 28vw, 400px);
+  height: auto;
+  justify-self: center;
+}
+
+.promo__cards {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.promo__cards--left {
+  justify-items: end;
+}
+
+.promo__cards--right {
+  justify-items: start;
+}
+
+.promo__card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  width: clamp(128px, 14vw, 168px);
+  padding: var(--space-5) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  box-shadow: 0 12px 30px rgba(23, 20, 15, 0.1);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: transform var(--motion-duration-fast) var(--motion-ease),
+    box-shadow var(--motion-duration-fast) var(--motion-ease);
+}
+
+.promo__card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 44px rgba(23, 20, 15, 0.16);
+}
+
+.promo__card-icon {
+  width: 40px;
+  height: 40px;
+  /* Themes off `color` via the icon's own `fill="currentColor"` — see
+     Services.css for why this replaces the old PNG-recolour filter. */
+  color: var(--color-text-accent);
+}
+
+/* Staggered offsets so the cards read as scattered rather than stacked. */
+.promo__card--1 { transform: translateX(-8%); }
+.promo__card--2 { transform: translateX(14%); }
+.promo__card--3 { transform: translateX(-4%); }
+.promo__card--4 { transform: translateX(6%); }
+.promo__card--5 { transform: translateX(-12%); }
+.promo__card--6 { transform: translateX(4%); }
+
+.promo__card--1:hover,
+.promo__card--2:hover,
+.promo__card--3:hover,
+.promo__card--4:hover,
+.promo__card--5:hover,
+.promo__card--6:hover {
+  transform: translateY(-6px);
+}
+
+@media (max-width: 900px) {
+  .promo__stage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  .promo__phone {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: clamp(260px, 78vw, 420px);
+  }
+
+  .promo__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .promo__cards--left,
+  .promo__cards--right {
+    justify-items: stretch;
+  }
+
+  .promo__card {
+    width: 100%;
+    transform: none;
+  }
+}

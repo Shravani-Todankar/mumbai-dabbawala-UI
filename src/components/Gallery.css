@@ -1,0 +1,51 @@
+/* A native scroll container rather than a transformed track: dragging,
+   wheeling and flicking all work for free, and the auto-drift is just
+   `scrollLeft` advancing on gsap's ticker.
+   No scroll-snap — mandatory snapping fights a continuous drift, yanking the
+   track back to the nearest slide on every frame. */
+.gallery__track {
+  display: flex;
+  gap: var(--space-5);
+  padding-inline: var(--container-pad);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* The track is a focusable scroll region, so it needs a visible focus ring. */
+.gallery__track:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 4px;
+}
+
+.gallery__slide {
+  flex: none;
+  /* Roughly two thirds the single-row size: two stacked rows of the old width
+     would have run past a laptop viewport's height. */
+  width: clamp(170px, 19vw, 280px);
+}
+
+.gallery__slide img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--color-media-placeholder);
+}
+
+@media (max-width: 700px) {
+  .gallery__slide {
+    width: clamp(150px, 42vw, 220px);
+  }
+}
+
+/* The two rows run against each other, so they read as one band rather than
+   two separate carousels. */
+.gallery__rows {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+}

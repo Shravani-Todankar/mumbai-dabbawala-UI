@@ -1,0 +1,30 @@
+.press-strip {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border-muted);
+}
+
+.press-strip__label {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.press-strip__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-4) clamp(var(--space-5), 4vw, var(--space-8));
+  margin-top: var(--space-4);
+}
+
+/* Reads as a logo row without being one: one weight, one size, muted enough
+   to sit behind the headline in the visual order. */
+.press-strip__item {
+  font-size: clamp(var(--font-size-md), 1.5vw, var(--font-size-xl));
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
