@@ -1,0 +1,125 @@
+.testimonials__rows {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.testimonials__marquee {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.testimonials__track {
+  display: flex;
+  width: max-content;
+  gap: var(--space-5);
+  padding: 0 var(--space-5);
+  list-style: none;
+  animation: testimonials-marquee 36s linear infinite;
+}
+
+.testimonials__marquee--reverse .testimonials__track {
+  animation-direction: reverse;
+  animation-duration: 42s;
+}
+
+.testimonials__marquee:hover .testimonials__track {
+  animation-play-state: paused;
+}
+
+@keyframes testimonials-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.testimonials__card {
+  position: relative;
+  flex: none;
+  width: min(360px, 80vw);
+  padding: var(--space-7) var(--space-6) var(--space-6);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  /* Lighter than the shared `--shadow-card` token — the full card shadow
+     read as too heavy for a small, densely-packed marquee card. */
+  box-shadow: 0 1px 2px rgba(23, 20, 15, 0.03);
+  transition: transform var(--motion-duration-fast) var(--motion-ease),
+    box-shadow var(--motion-duration-fast) var(--motion-ease),
+    border-color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.testimonials__card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-border-hover);
+  box-shadow: 0 4px 12px rgba(23, 20, 15, 0.08);
+}
+
+/* Oversized decorative quote mark, tucked behind the copy — gives each card
+   a focal point instead of it being a plain paragraph in a box. Positioned
+   inside the card's own padding box (not offset above it) so it never gets
+   clipped by the card's rounded corners. */
+.testimonials__mark {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-5);
+  font-family: var(--font-family-display);
+  font-size: 3.5rem;
+  line-height: 1;
+  color: var(--color-text-accent);
+  opacity: 0.12;
+}
+
+.testimonials__quote {
+  position: relative;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+}
+
+.testimonials__quote::before,
+.testimonials__quote::after {
+  content: '\201C';
+}
+
+.testimonials__quote::after {
+  content: '\201D';
+}
+
+.testimonials__person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.testimonials__avatar {
+  display: grid;
+  place-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.testimonials__name {
+  font-weight: var(--font-weight-bold);
+}
+
+.testimonials__role {
+  margin-top: 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonials__track {
+    animation: none;
+  }
+}

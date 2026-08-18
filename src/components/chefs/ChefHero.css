@@ -1,0 +1,58 @@
+.chef-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.chef-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.chef-hero__bg-image {
+  display: block;
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+}
+
+.chef-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(23, 20, 15, 0.55) 0%, rgba(23, 20, 15, 0.75) 60%, rgba(23, 20, 15, 0.92) 100%);
+}
+
+.chef-hero__content {
+  position: relative;
+}
+
+.chef-hero__statement {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(2.75rem, 8vw, 7rem);
+  line-height: 0.98;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.chef-hero__line {
+  display: block;
+}
+
+.chef-hero__sub {
+  margin-top: var(--space-7);
+  max-width: 46ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .chef-hero {
+    min-height: 70vh;
+  }
+}

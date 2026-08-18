@@ -1,0 +1,253 @@
+/* No max-width: 46ch here (unlike other section heads) — "How the network
+   grew" needs the full container width to stay on one line at the display
+   size the heading renders at. */
+.about-timeline__head {
+  max-width: 100%;
+}
+
+/* Bento grid. Explicit placement (not auto-flow) so the tile sizes are a
+   deliberate composition rather than whatever order happens to produce, and
+   so the chronology still reads left-to-right, top-to-bottom.
+
+   global.css resets `ul` but not `ol`, hence the list-style reset — kept as an
+   <ol> because milestones are genuinely ordered. */
+.about-timeline__bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Fixed row height, not `auto`: the image frames are flex:1 with no
+     intrinsic cap, so auto rows sized themselves to the photos' full
+     intrinsic height and the feature tile came out ~1377px tall. Fixing the
+     row is what makes the tile proportions a composition rather than a
+     by-product of image dimensions. */
+  grid-auto-rows: 290px;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding: 0;
+  list-style: none;
+}
+
+.about-timeline__card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  transition: border-color var(--motion-duration-instant) var(--motion-ease),
+    box-shadow var(--motion-duration-instant) var(--motion-ease),
+    transform var(--motion-duration-instant) var(--motion-ease);
+}
+
+.about-timeline__card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-3px);
+}
+
+/* --- tile placement ----------------------------------------------------- */
+
+/* 1890 — the feature tile, two columns wide and two rows tall. */
+.about-timeline__card:nth-child(1) {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
+}
+
+/* 1930s — wide tile beside it. */
+.about-timeline__card:nth-child(2) {
+  grid-column: 3 / span 2;
+  grid-row: 1;
+}
+
+/* 1998 + 2005 — the two small squares. */
+.about-timeline__card:nth-child(3) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.about-timeline__card:nth-child(4) {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+/* Today — full-width closing tile, laid out horizontally. */
+.about-timeline__card:nth-child(5) {
+  grid-column: 1 / span 4;
+  grid-row: 3;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.about-timeline__card:nth-child(5) .about-timeline__image-frame {
+  flex: 0 0 300px;
+  align-self: stretch;
+  aspect-ratio: 16 / 9;
+}
+
+.about-timeline__card:nth-child(5) .about-timeline__body {
+  flex: 1 1 auto;
+  margin-top: 0;
+}
+
+/* --- card internals ----------------------------------------------------- */
+
+/* flex:1 + min-height:0 lets the image absorb whatever height its tile has
+   left over, so the two-row feature tile fills instead of leaving a gap. */
+.about-timeline__image-frame {
+  flex: 1 1 auto;
+  min-height: 120px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-media-placeholder);
+}
+
+.about-timeline__image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-timeline__body {
+  flex: 0 0 auto;
+  margin-top: var(--space-4);
+  min-width: 0;
+}
+
+.about-timeline__year {
+  display: block;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+  color: var(--color-text-accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.about-timeline__title {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.about-timeline__text {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* The two small squares carry the least room, so their copy is trimmed to a
+   readable block rather than overflowing the tile. */
+.about-timeline__card:nth-child(3) .about-timeline__text,
+.about-timeline__card:nth-child(4) .about-timeline__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Single-row tiles: the image gets whatever is left after the copy, so its
+   floor has to be low enough that a two-line title still fits. */
+.about-timeline__card:nth-child(2) .about-timeline__image-frame,
+.about-timeline__card:nth-child(3) .about-timeline__image-frame,
+.about-timeline__card:nth-child(4) .about-timeline__image-frame {
+  min-height: 80px;
+}
+
+/* The wide 1930s tile is only one row tall, so its copy gets the same
+   treatment — a little more room than the squares. */
+.about-timeline__card:nth-child(2) .about-timeline__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- responsive --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .about-timeline__bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Every tile drops to a single row here, and the columns are narrower, so
+       the copy needs more vertical room than the desktop row allows. */
+    grid-auto-rows: 340px;
+  }
+
+  /* Narrower tiles wrap the copy further; clamp it so nothing is cut off
+     mid-line by the card's overflow:hidden. */
+  .about-timeline__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .about-timeline__card:nth-child(1) {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .about-timeline__card:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .about-timeline__card:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .about-timeline__card:nth-child(4) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .about-timeline__card:nth-child(5) {
+    grid-column: 2;
+    grid-row: 3;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .about-timeline__card:nth-child(5) .about-timeline__image-frame {
+    flex: 1 1 auto;
+    margin-top: var(--space-4);
+    aspect-ratio: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .about-timeline__bento {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  /* One column: every tile is its own row, in chronological order. */
+  .about-timeline__card:nth-child(n) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .about-timeline__image-frame {
+    aspect-ratio: 16 / 10;
+    flex: 0 0 auto;
+  }
+
+  .about-timeline__card:nth-child(3) .about-timeline__text,
+  .about-timeline__card:nth-child(4) .about-timeline__text {
+    -webkit-line-clamp: none;
+    display: block;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-timeline__card:hover {
+    transform: none;
+  }
+}

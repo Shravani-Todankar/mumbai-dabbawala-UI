@@ -23,9 +23,27 @@
 }
 
 .header__brand img {
-  width: 250px;
+  width: 160px;
   height: auto;
   max-width: 100%;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-inline-start: auto;
+}
+
+.header__nav-link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  transition: color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.header__nav-link:hover {
+  color: var(--color-text-accent);
 }
 
 .header__cta {
@@ -50,7 +68,7 @@
   }
 
   .header__brand img {
-    width: 150px;
+    width: 110px;
   }
 
   .header__cta {

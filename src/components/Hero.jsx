@@ -76,7 +76,7 @@ export default function Hero() {
         <div className="hero__snow" aria-hidden="true">
           <Suspense fallback={null}>
             <PixelSnow
-              color="#a94c21"
+              color="#ed3237"
               density={0.05}
               brightness={1}
               depthFade={40}

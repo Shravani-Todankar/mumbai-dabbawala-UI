@@ -1,0 +1,103 @@
+.wl-countdown-bar {
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.wl-countdown-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  padding-block: var(--space-5);
+}
+
+.wl-countdown__caption {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.wl-countdown__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-tint-soft);
+}
+
+.wl-countdown__row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+/* Each unit is its own bordered tile — the number reads as a readout rather
+   than as running body copy, and the fixed min-width stops the row shifting
+   as the seconds tick between 1- and 2-digit values. */
+.wl-countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 62px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-elevated);
+}
+
+/* The seconds tile is the only one that changes every tick — tinting it marks
+   the live value without animating anything. */
+.wl-countdown__unit:last-child {
+  border-color: var(--color-border-strong);
+  background: var(--color-accent-tint-weak);
+}
+
+.wl-countdown__value {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-base);
+  line-height: 1;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.wl-countdown__unit:last-child .wl-countdown__value {
+  color: var(--color-text-accent);
+}
+
+.wl-countdown__label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 700px) {
+  .wl-countdown-bar__inner {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wl-countdown__row {
+    gap: var(--space-1);
+  }
+
+  .wl-countdown__unit {
+    min-width: 0;
+    flex: 1 1 0;
+    padding-inline: var(--space-2);
+  }
+
+  .wl-countdown__value {
+    font-size: var(--font-size-xl);
+  }
+}

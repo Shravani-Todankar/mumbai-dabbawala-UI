@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5173
+    },
+    {
+      "name": "waitlist-standalone",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve", "/Users/apple/Downloads/waitlist-standalone", "-l", "4178"],
+      "port": 4178
     }
   ]
 }

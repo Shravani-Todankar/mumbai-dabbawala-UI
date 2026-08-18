@@ -1,0 +1,29 @@
+.blog-hero {
+  padding-top: var(--space-9);
+}
+
+.blog-hero__statement {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.blog-hero__line {
+  display: block;
+}
+
+.blog-hero__sub {
+  margin-top: var(--space-5);
+  max-width: 52ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .blog-hero {
+    padding-top: var(--space-7);
+  }
+}

@@ -1,12 +1,21 @@
+import { Link } from 'react-router-dom';
 import { footerLinks, site } from '../data/content';
 import './Footer.css';
+
+// Footer link lists mix Home-section hash links ("/#services") with clean
+// routes ("/about") — router Link for the latter, plain anchor for the
+// former, since a client-side Link transition doesn't trigger the browser's
+// native hash-scroll the way a full navigation does.
+function FooterLink({ href, children }) {
+  return href.includes('#') ? <a href={href}>{children}</a> : <Link to={href}>{children}</Link>;
+}
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container footer__grid">
         <div className="footer__brand">
-          <img src="/assets/images/logo.png" alt="" width="56" height="56" />
+          <img src="/assets/images/logo.png" alt="" width="634" height="171" />
           <p>{site.tagline}</p>
         </div>
 
@@ -15,7 +24,7 @@ export default function Footer() {
           <ul>
             {footerLinks.quick.map((link) => (
               <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
+                <FooterLink href={link.href}>{link.label}</FooterLink>
               </li>
             ))}
           </ul>
@@ -48,6 +57,12 @@ export default function Footer() {
 
       <div className="container footer__bar">
         <p>&copy; {new Date().getFullYear()} {site.name}. All Rights Reserved.</p>
+        <p className="footer__credit">
+          Designed &amp; Developed By{' '}
+          <a href="https://www.techinfinity.io" target="_blank" rel="noopener noreferrer">
+            Techinfinity
+          </a>
+        </p>
         <ul>
           {footerLinks.legal.map((label) => (
             <li key={label}>{label}</li>

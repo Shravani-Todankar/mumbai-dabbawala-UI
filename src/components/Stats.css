@@ -1,13 +1,3 @@
-/* The eyebrow is 12px, where the band's tinted accent gives only 3.97:1.
-   White clears 5.61:1; the tint stays on the larger "+" suffix. */
-.stats .eyebrow {
-  color: #ffffff;
-}
-
-.stats .eyebrow::before {
-  background: #ffffff;
-}
-
 /* One figure carries the section and the other three support it — the me&u
    "The Numbers" hierarchy, in place of four equal cells. */
 .stats__lead {

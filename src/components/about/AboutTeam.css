@@ -1,0 +1,92 @@
+.about-team__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-9);
+  padding: 0;
+  list-style: none;
+}
+
+/* ID-badge card: a lanyard-clip notch at top, everything centred below it,
+   like a real staff badge rather than a plain bordered box. */
+.about-team__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  text-align: center;
+  transition: transform var(--motion-duration-fast) var(--motion-ease),
+    box-shadow var(--motion-duration-fast) var(--motion-ease);
+}
+
+.about-team__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.about-team__clip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 36px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-elevated);
+}
+
+.about-team__initials {
+  display: grid;
+  place-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-accent-tint-soft);
+  color: var(--color-text-accent);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.about-team__name {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.about-team__role {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Barcode-striped tag, standing in for the printed strip on a real ID card. */
+.about-team__focus {
+  margin-top: var(--space-6);
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px dashed var(--color-border-muted);
+  padding-top: var(--space-4);
+  width: 100%;
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+@media (max-width: 900px) {
+  .about-team__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .about-team__grid {
+    grid-template-columns: 1fr;
+  }
+}

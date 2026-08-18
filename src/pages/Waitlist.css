@@ -1,0 +1,37 @@
+/* Token scope for the waitlist page. Reuses the site's existing surface/text
+   tokens as-is (so the page still reads as part of the same site between the
+   shared Header and Footer) and adds only the display type sizes for the
+   hand-rolled headings that skip AnimatedHeading. Declared on .wl-page
+   only — :root is untouched. */
+.wl-page {
+  --wl-display-1: clamp(2.25rem, 5.6vw, 4.75rem);
+  --wl-display-2: clamp(1.875rem, 4vw, 3.25rem);
+  --wl-display-3: clamp(1.5rem, 2.6vw, 2.25rem);
+}
+
+.wl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Numeric/coded chips shared by the nav brand, hero rail, lid mark, manifest
+   and lane rows. font-variant-numeric alone doesn't guarantee stable column
+   widths (Palanquin's tabular-figure support isn't verified), so anywhere
+   column alignment actually matters also sets an explicit ch width locally. */
+.wl-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.wl-code {
+  font-family: var(--font-family-primary);
+  letter-spacing: 0.02em;
+}
+
+.wl-page [tabindex='-1']:focus:not(:focus-visible) {
+  outline: none;
+}

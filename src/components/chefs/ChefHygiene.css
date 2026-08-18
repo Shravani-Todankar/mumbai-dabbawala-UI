@@ -1,0 +1,42 @@
+.chef-hygiene__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+  padding: 0;
+  list-style: none;
+}
+
+.chef-hygiene__icon {
+  display: grid;
+  place-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-accent-tint-soft);
+  color: var(--color-text-accent);
+}
+
+.chef-hygiene__title {
+  margin-top: var(--space-5);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.chef-hygiene__text {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .chef-hygiene__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .chef-hygiene__grid {
+    grid-template-columns: 1fr;
+  }
+}

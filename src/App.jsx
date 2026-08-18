@@ -1,56 +1,29 @@
-import AnnouncementBar from './components/AnnouncementBar';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import VideoScroll from './components/VideoScroll';
-import GlowSection from './components/GlowSection';
-import About from './components/About';
-import Process from './components/Process';
-import Services from './components/Services';
-import Stats from './components/Stats';
-import Framework from './components/Framework';
-import Marquee from './components/Marquee';
-import Recognition from './components/Recognition';
-import Gallery from './components/Gallery';
-import AppPromo from './components/AppPromo';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import ScrollProgress from './components/ScrollProgress';
-import ScrollButton from './components/ScrollButton';
-import StackSections from './components/StackSections';
-import { useSmoothScroll } from './hooks/useSmoothScroll';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import ChefsCorner from './pages/ChefsCorner';
+import MenuCalendar from './pages/MenuCalendar';
+import Waitlist from './pages/Waitlist';
 
 export default function App() {
-  useSmoothScroll();
-
   return (
-    <>
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
-      <ScrollProgress />
-      <AnnouncementBar />
-      <Header />
-      <main id="main">
-        <Hero />
-        <VideoScroll />
-        <GlowSection />
-        <About />
-        {/* These three read as a deck: each sticks under the one before it and
-            recedes as the next slides over. */}
-        <StackSections>
-          <Process />
-          <Services />
-          <Stats />
-        </StackSections>
-        <Framework />
-        <Marquee />
-        <Recognition />
-        <Gallery />
-        <AppPromo />
-        <Contact />
-      </main>
-      <Footer />
-      <ScrollButton />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/chefs-corner" element={<ChefsCorner />} />
+          <Route path="/menu-calendar" element={<MenuCalendar />} />
+          <Route path="/waitlist" element={<Waitlist />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }

@@ -24,7 +24,7 @@ export default function Stats() {
   const scope = useSectionFx();
 
   return (
-    <section className="section section--slab section--brand stats" id="work" ref={scope}>
+    <section className="section section--slab section--tint stats" id="work" ref={scope}>
       <div className="container">
         <div className="stats__head">
           <p className="eyebrow reveal">The numbers</p>

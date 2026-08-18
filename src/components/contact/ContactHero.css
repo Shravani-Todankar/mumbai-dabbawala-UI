@@ -1,0 +1,58 @@
+.contact-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.contact-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.contact-hero__bg-image {
+  display: block;
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+}
+
+.contact-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(23, 20, 15, 0.6) 0%, rgba(23, 20, 15, 0.8) 65%, rgba(23, 20, 15, 0.94) 100%);
+}
+
+.contact-hero__content {
+  position: relative;
+}
+
+.contact-hero__statement {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.contact-hero__line {
+  display: block;
+}
+
+.contact-hero__sub {
+  margin-top: var(--space-6);
+  max-width: 46ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 600px) {
+  .contact-hero {
+    min-height: 46vh;
+  }
+}

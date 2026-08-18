@@ -9,12 +9,12 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-pill);
-  /* Fixed over both near-white sections and the terracotta stats band. The
-     terracotta fill carries the light ones; the white ring separates it from
-     the band, where fill and background would otherwise match. */
-  background: #a94c21;
+  /* Fixed over both near-white sections and the red stats band. The accent
+     fill carries the light ones; the white ring separates it from the band,
+     where fill and background would otherwise match. */
+  background: var(--color-text-accent);
   color: #ffffff;
-  box-shadow: 0 0 0 2px #ffffff, 0 6px 20px rgba(23, 20, 15, 0.24);
+  box-shadow: 0 0 0 2px #ffffff, 0 6px 20px rgba(55, 52, 53, 0.24);
   transition: background-color var(--motion-duration-instant) var(--motion-ease),
     transform var(--motion-duration-instant) var(--motion-ease);
 }
@@ -28,7 +28,7 @@
 }
 
 .scroll-button:hover {
-  background: #8f3f1a;
+  background: var(--color-accent-hover);
   transform: translateY(-3px);
 }
 

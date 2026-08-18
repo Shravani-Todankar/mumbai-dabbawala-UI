@@ -1,0 +1,73 @@
+.chef-day__line {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-9);
+  padding: 0;
+  padding-top: var(--space-6);
+  list-style: none;
+}
+
+/* The connecting line: one full-width bar behind the row, sat at dot height. */
+.chef-day__line::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--space-6) + 5px);
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border-muted);
+}
+
+.chef-day__stop {
+  position: relative;
+}
+
+.chef-day__dot {
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin-bottom: var(--space-4);
+  border-radius: 50%;
+  background: var(--color-text-accent);
+}
+
+.chef-day__time {
+  display: block;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-accent);
+}
+
+.chef-day__title {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+}
+
+.chef-day__text {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .chef-day__line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-8);
+  }
+
+  .chef-day__line::before {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .chef-day__line {
+    grid-template-columns: 1fr;
+  }
+}

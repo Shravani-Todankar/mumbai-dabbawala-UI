@@ -9,8 +9,9 @@
   font-size: var(--font-size-sm);
 }
 
-/* White on #a94c21 measures 5.61:1, so the underline carries the affordance
-   rather than a colour change that would drop below AA. */
+/* White on #ED3237 measures ~4.1:1, under AA for this small text — the
+   underline carries the affordance rather than a colour change that would
+   make it worse. */
 .announce__link {
   color: inherit;
   font-weight: var(--font-weight-medium);

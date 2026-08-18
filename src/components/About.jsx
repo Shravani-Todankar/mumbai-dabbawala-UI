@@ -80,6 +80,19 @@ export default function About() {
         { '--about-pop': 0.3, opacity: 0 }
       );
 
+      // A short quickTo per thread, not a raw style write — writing
+      // strokeDashoffset straight from the scroll position hard-jumps the
+      // line to match every single scroll event, and under Lenis those
+      // events don't fire at a perfectly even cadence, so the line visibly
+      // stuttered. quickTo eases toward each new target instead of jumping
+      // to it, smoothing that out; it's cheap enough (a few ms of catch-up)
+      // that the line still reads as tracking the scroll, not lagging behind
+      // it. The pop trigger below still reads the *raw* progress number, not
+      // this smoothed value, so milestone timing is unaffected.
+      const setOffset = threads.map((t) =>
+        gsap.quickTo(t.el, 'strokeDashoffset', { duration: 0.25, ease: 'power2.out' })
+      );
+
       ScrollTrigger.create({
         // The section, not `scene`: `.about__scene` is `position: absolute`, and
         // ScrollTrigger mis-measures such an element's document offset — it put
@@ -88,16 +101,18 @@ export default function About() {
         trigger: scene.closest('.about'),
         start: 'top 85%',
         end: 'bottom 70%',
-        // Written straight from progress rather than scrubbed tweens: the draw
-        // is one number per thread, and the pops need to fire as discrete
-        // events when the line reaches them, not be interpolated.
-        onRefresh: (self) => draw(self.progress),
+        onRefresh: (self) => draw(self.progress, true),
         onUpdate: (self) => draw(self.progress),
       });
 
-      function draw(progress) {
-        threads.forEach((t) => {
-          t.el.style.strokeDashoffset = `${t.len * (1 - progress)}`;
+      function draw(progress, snap) {
+        threads.forEach((t, i) => {
+          const offset = t.len * (1 - progress);
+          // A refresh (resize, route change, first paint) should land exactly
+          // on the resting position, not ease into it from wherever the last
+          // scroll left off.
+          if (snap) t.el.style.strokeDashoffset = `${offset}`;
+          else setOffset[i](offset);
         });
 
         floats.forEach((f) => {

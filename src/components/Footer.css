@@ -9,10 +9,12 @@
   gap: var(--space-7);
 }
 
+/* The source logo is 634x171, so a 56x56 box squeezed it to ~15px tall. Sized
+   by width with height:auto (same as the header) so it keeps its real ratio. */
 .footer__brand img {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
+  width: 190px;
+  height: auto;
+  max-width: 100%;
 }
 
 .footer__brand p {
@@ -71,6 +73,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-5);
+}
+
+/* Studio credit. The link is given the accent colour and an underline so it
+   reads as clickable against the muted bar text around it — colour alone
+   would not be a sufficient affordance. */
+.footer__credit a {
+  color: var(--color-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.footer__credit a:hover {
+  color: var(--color-accent-hover);
 }
 
 @media (max-width: 900px) {

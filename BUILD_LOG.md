@@ -1717,3 +1717,1524 @@ Fresh reload, no console errors, build passes (**125.61 kB gzip**, CSS 35.24 →
   `opacity: 0` at rest, 4 bloom elements present, hover gradient still resolving.
 - 4 cards at `256x320` (the `md` preset's 3:4 box) — layout unaffected.
 - 390x844: shadow and background still gone, 4 cards, no horizontal overflow.
+
+## Round 35 — Contact, Blog, and Chef's Corner pages added
+
+Client: "design contact & blog page", then "chef's corners ka page banao with elements included".
+
+Three new routes on top of the existing About page's routing pattern (`react-router-dom`, shared
+`Layout.jsx`):
+
+- **`/contact`** — `ContactHero` (photo hero) + Home's existing real `Contact` form (reused as-is,
+  not rebuilt — it's genuine working functionality) + `ContactVisit` (two office cards with real
+  Google Maps search links, no fake embedded map).
+- **`/blog` + `/blog/:slug`** — `BlogHero` (text-only, no photo — a third photo-hero in a row would
+  flatten into sameness against About/Contact) + `BlogGrid` (one featured post + 3-col grid) +
+  `BlogPost` detail page. 6 dummy placeholder posts in `content.js`.
+- **`/chefs-corner`** — `ChefHero` (photo hero) + `ChefSpotlight` (one featured home kitchen, image +
+  copy + blockquote) + `ChefKitchens` (4-card photo grid of dummy kitchens) + `ChefCta` (photo-band
+  closing CTA linking to `/contact`). All dummy placeholder content — no real chef/kitchen data
+  supplied yet.
+
+Header nav got `About` / `Blog` / `Chef's Corner` links plus a `Contact us` button (all `Link`, not
+`<a>`). Footer `quick` links fixed from bare `#anchor` to `/#anchor` so they resolve correctly from
+non-Home routes, and gained `Blog` + `Chef's Corner` entries.
+
+### Verification (round 35)
+Fresh tab, no console errors. `get_page_text` confirmed correct copy on all three new routes.
+Client-side navigation from a blog card into `/blog/:slug` confirmed working. All 6 images across
+Chef's Corner's Spotlight/Kitchens/CTA sections confirmed `complete && naturalWidth > 0`. Screenshot
+confirmed hero + header nav render correctly.
+
+## Round 36 — About/Chef's Corner CTA shrunk to a minimal banner
+
+Client: "chef corner aur about page me jo cta dala hai bahot hi bada hai, usko minimal rakho" — both
+closing CTAs (`AboutCta`, `ChefCta`) were too tall.
+
+Root cause: both were a full-bleed photo band (120%-tall parallax image + scrim) with `padding-block:
+var(--space-10)` (140px each side) plus a multi-stat row — the same treatment as the page heroes,
+which is too heavy for a closing banner.
+
+Fix: dropped the photo/scrim layer and the stats row entirely from both components. `.section--brand`
+alone already supplies the solid red background + white text tokens (`tokens.css:101`), so no image is
+needed. Padding cut to `var(--space-8)` (64px), title shrunk to `clamp(1.75rem, 3.6vw, 2.5rem)`. Now
+just eyebrow + title + text + button. Removed the now-unused `image`/`stats` fields from `aboutCta`/
+`chefCta` in `content.js` rather than leaving dead data behind.
+
+### Verification (round 36)
+Fresh tab, no console errors on `/about` and `/chefs-corner`. Confirmed via `getBoundingClientRect()`
+(screenshot-after-scroll hit the known blank-render glitch) that both CTA sections dropped to ~592px
+total including padding, no `<img>` inside either section, and no stats row in the rendered text.
+
+## Round 37 — CTA color swapped from brand red to dark charcoal
+
+Client: "Cta me red color too much bright lag raha hai koi aur color use karo" — the `section--brand`
+red fill on the now-compact About/Chef's Corner CTAs read as too bright.
+
+Fix: swapped `section--brand` for `section--invert` on both `AboutCta` and `ChefCta` — reuses the
+existing dark-charcoal (`#373435`) surface already used by the page heroes, rather than introducing a
+new color to the palette. `--color-text-accent` isn't overridden by `section--invert`, so the CTA
+button stays brand red against the dark background instead of disappearing.
+
+### Verification (round 37)
+Fresh tab, no console errors on either route. `getComputedStyle(...).backgroundColor` on both
+`.about-cta` and `.chef-cta` confirmed `rgb(55, 52, 53)` (#373435), not the red band.
+
+## Round 38 — CTA color: dark charcoal also rejected, settled on light tint
+
+Client: "dark charcoal isn't working too" — round 37's `section--invert` fix was rejected as well.
+
+That exhausts the palette's two saturated surfaces (brand red, dark charcoal); the only ones left are
+the two light neutrals already used elsewhere on the page (`#FEFEFE` page white, `#F5F5F5` tint).
+Switched `AboutCta`/`ChefCta` to `section--tint` (`#F5F5F5`, same surface `ContactVisit` already uses)
+— the CTA banner now reads as a quiet, page-toned section rather than a colored band; the brand red is
+kept only on the button as an accent, not the whole background.
+
+### Verification (round 38)
+Fresh tab, no console errors on `/about` and `/chefs-corner`. `getComputedStyle(...).backgroundColor`
+on both `.about-cta` and `.chef-cta` confirmed `rgb(245, 245, 245)`.
+
+## Round 39 — Chef's Corner made more interesting + placeholder copy replaced
+
+Client: "chef's corner page ko aur interesting bana sakte hai kya hum? also instead of using text as
+placeholder... etc use dummy text related to it."
+
+Two changes:
+1. **New `ChefDay` section** (`src/components/chefs/ChefDay.jsx` + `.css`) — a connected-line
+   timeline ("4:30 AM Stove lit" → "7:00 AM The cooking hour" → "9:30 AM Packed and sealed" →
+   "11:30 AM On the desk, hot"), placed between `ChefSpotlight` and `ChefKitchens`. Deliberately not
+   another card grid — `ChefKitchens` right below it already is one, so this uses a horizontal dotted
+   line instead for variety. `ChefKitchens` cards also gained a "Since {year}" badge overlay on each
+   photo.
+2. **All "Placeholder"/"Dummy" labels removed from Chef's Corner copy** in `content.js` — replaced
+   with specific, flavorful dummy content: a named illustrative kitchen ("Kamble Kitchen", running
+   since 1994, cook "Sunita Kamble") with a real-feeling backstory and quote, 4 distinct kitchen
+   entries with names/specialties/founding years instead of 4 identical "Placeholder Kitchen" rows,
+   and a `chefHero` sub-line that explicitly discloses the kitchens are illustrative rather than real
+   listings (kept the disclosure, dropped the word "Placeholder" itself — matches the site's existing
+   principle of never presenting invented content as unlabeled fact, see
+   `feedback_no_arbitrary_asset_mapping` memory).
+
+### Verification (round 39)
+Fresh tab, no console errors. `get_page_text` confirmed all five sections (Hero, Spotlight, Day,
+Kitchens, Cta) render the new copy with no leftover "Placeholder"/"Dummy" strings. `ChefDay`'s 4 stops
+and `ChefKitchens`' 4 "Since {year}" badges all present. The 4 kitchen-grid photos use pre-existing
+`loading="lazy"` and did not fire in this headless pane after a scripted scroll (known tooling
+limitation — those image files are already confirmed working elsewhere on the site) — not treated as
+a regression.
+
+## Round 40 — Homepage testimonials → marquee, blog posts got real bodies
+
+Client: "on home add this structure for testimonials from 21st dev: npx @21st-dev/cli add
+shadcnspace/marquee-01", then mid-turn: "on blog pages add content for each blog too".
+
+**Testimonials marquee.** Ran `npx @21st-dev/cli add shadcnspace/marquee-01 --print` first to see
+what it would actually do: it delegates to `npx shadcn@latest add <21st.dev registry URL>`, which — on
+running it for real — immediately prompted `You need to create a components.json file to add
+components. Proceed?`. That would scaffold Tailwind + shadcn config into a project that has neither
+and uses hand-written CSS + design tokens everywhere else (same reasoning as the earlier `PixelCanvas`
+port). Stopped before confirming that prompt and hand-built the marquee structure instead: `Testimonials.jsx`
+went from an arrow/dot carousel to an infinite auto-scrolling row (`Testimonials.css`), same
+duplicated-list + CSS-keyframe technique as `AboutStory`'s ticker, mask-image fade on both edges,
+pauses on hover, respects `prefers-reduced-motion`.
+
+**Blog post bodies.** All 6 `blogPosts` entries in `content.js` rewritten from generic
+"Placeholder headline about X" / "Dummy excerpt" copy to specific titles, categories, and excerpts,
+each now with a real `body` (3 short paragraphs). `BlogPost.jsx` updated to render `post.body` instead
+of just repeating the excerpt; the old "Placeholder post" disclosure note was dropped since the posts
+no longer present as filler. Topics are the same 6 as before (coding system, seminar booking, press
+recap, mobile app, training batch, anniversary) — only the copy changed, not the site structure.
+
+### Verification (round 40)
+Fresh tab, no console errors on `/` and `/blog`. Testimonials: 8 `.testimonials__card` elements (4
+testimonials × 2 for the seamless loop), `animationName` confirmed `testimonials-marquee` on the
+track. Blog: `get_page_text` confirmed all 6 new titles/excerpts on `/blog`, and a real click into the
+featured card's `/blog/the-code-on-every-lid` confirmed the 3-paragraph body renders.
+
+## Round 41 — Testimonials: dummy copy + second reversed marquee row; Blog: more posts, smaller post title, sidebar
+
+Client: "For testimonials: 1. use dummy content instead of just placeholder. 2. also add 1 more marquee
+which will go to left-right direction", then mid-turn: "for blog use more content and blog heading in
+the individual page should be smaller than what it is right now, also think of newsletter section to
+add on the right side with addition too some menu items, etc".
+
+**Testimonials.** `testimonials` in `content.js` grew from 4 generic "Placeholder Client" entries to 8
+specific named quotes (no photos — still no real clients supplied, and a photo next to an invented
+quote would read as a fabricated real person). `Testimonials.jsx` now renders two marquee rows instead
+of one: first 4 quotes scroll normally, last 4 scroll in `.testimonials__marquee--reverse`, which just
+sets `animation-direction: reverse` (+ a slightly longer duration so the rows don't stay visibly in
+sync) on the *same* keyframe — no second keyframe needed, since the duplicated-list technique is
+symmetric in both directions.
+
+**Blog.** `blogPosts` grew from 6 to 10 (added Roti Bank/community, Digital Dabbawala, Centralised
+Kitchen, and "A Day With a Dabbawala" recap posts, same specific-copy treatment as the first 6).
+`BlogPost.jsx` restructured from a single centred column into a two-column layout
+(`.blog-post__layout`): the article on the left, a sticky sidebar on the right with a client-side-only
+newsletter signup box (`blogNewsletter` in `content.js`, validates/clears like the Contact form),
+a "Categories" list (derived from `blogPosts`' categories, links to `/blog`), and a "Recent posts" list
+(other posts, links to their real detail pages). The post title dropped from the page's usual
+`.section-title` (4xl) to a dedicated smaller `.blog-post__title` (`clamp(1.75rem, 3.4vw, 2.5rem)`,
+~28px in the tested viewport) — it read too heavy once a real multi-paragraph body sat under it.
+
+### Verification (round 41)
+Fresh tab, no console errors on `/`, `/blog`, and a post detail page. Testimonials: two
+`.testimonials__marquee` rows confirmed, 8 cards each (4 unique × 2 loop), `animationDirection`
+`normal`/`reverse` and durations `36s`/`42s` respectively. Blog: grid shows 10 cards, sidebar renders
+Categories + Recent posts with real links, newsletter form submit confirmed (`input` filled,
+`requestSubmit()`, success message "Thanks — you're on the list." appeared), post title computed
+`font-size: 28px` (down from the previous 4xl heading).
+
+## Round 42 — Testimonials richer, Chef's Corner gets chef names, Blog hero redesigned
+
+Client, three separate notes in one turn: "testimonials bland lag raha hai pura" (whole testimonials
+section looks bland); "chef's corner page me chef ki info hogi abhi k liye tumhe jo jo lagta hai
+chef's related content wo add kardo" (add chef info, use judgement on what fits); "blog page ka jo
+heading hai hero section ki uski font size small karo, hero section change karo thoda 21st dev se
+inspiration lo, basic hero section nahi chahiye" (blog hero heading too big, hero itself too basic).
+
+**Testimonials.** Section wrapped in `section--slab section--tint` (was sitting directly on plain
+white, no separation from neighbouring sections). Each card gained: a large decorative quote-mark
+glyph behind the copy (`::before`/`::after` for the actual quote marks, a separate oversized `"` at
+12% opacity as a background accent), a round accent-colored initials avatar next to the name/role
+(computed from the name client-side, e.g. "Rohan Mehta" → "RM"), and a resting `--shadow-card` that
+lifts to `--shadow-card-hover` + `translateY(-4px)` on hover instead of just a border-color change.
+
+**Chef's Corner.** `chefKitchens` entries in `content.js` gained a `chef` (the cook's own name) and
+`years` field; `ChefKitchens.jsx` now leads each card with the chef's name as the heading, with the
+kitchen's brand name + years-on-route as a secondary accent-colored line, and the specialty below that
+— previously the kitchen brand name was the heading and no person was named at all outside the one
+`ChefSpotlight` example. Section heading changed from "A network of home kitchens" to "Meet the chefs
+behind the relay" to match.
+
+**Blog hero.** `BlogHero.jsx` rebuilt from a single centred typographic block (headline up to 7.5rem)
+into a two-column editorial header: smaller headline (`clamp(2.25rem, 4.6vw, 3.75rem)`, ~36px on the
+tested viewport) + sub-copy + a row of category pills on the left, a small "Also new" post-preview card
+(photo + date + title, links to a real post) on the right. Preview card deliberately uses `blogPosts[1]`,
+not `[0]` — `[0]` is already `BlogGrid`'s big featured post right below, so previewing it again in the
+hero would have been redundant.
+
+### Verification (round 42)
+Fresh tab, no console errors on `/`, `/chefs-corner`, `/blog`. Testimonials: section background
+confirmed `rgb(245, 245, 245)`, an avatar rendered with text "RM" for Rohan Mehta, card `box-shadow`
+present. Chef's Corner: `get_page_text` confirmed all 4 cards now lead with a chef name ("Sunita
+Kamble", "Manisha Bhatt", "Ramila Patel", "Lakshmi Iyer") with kitchen + years as the second line.
+Blog hero: `.blog-hero__statement` computed `font-size: 36px`, preview card's `href` confirmed pointing
+at a different post (`/blog/a-seminar-in-a-college-hall`) than the grid's featured post, 7 category
+pills rendered.
+
+## Round 43 — Testimonials: tint dropped, quote-mark clipping fixed
+
+Client: "Testimonials me tint background mat add karo repetitive lag raha hai wo bahot. jo decorative
+quote mark per card hai wo cut ho raha hai." — round 42's `section--tint` background read as repetitive
+(Kitchens, ContactVisit, and both CTA banners already use the same tint), and the oversized decorative
+quote mark was getting clipped.
+
+Fixes: removed `section--slab section--tint` from `Testimonials.jsx`, back to the section sitting
+directly on the page's own white background. For the clipping: `.testimonials__card` had
+`overflow: hidden` while `.testimonials__mark` was positioned at `top: -0.3em` — partly above the
+card's own padding box, so the card's rounded-corner clip cut the top off the glyph. Removed
+`overflow: hidden` from the card (nothing else on it needed clipping) and moved the mark to
+`top: var(--space-3)` (fully inside the card, no negative offset), with a slightly smaller size
+(3.5rem, was 5rem) so it sits comfortably in the top padding without crowding the quote text under it.
+
+### Verification (round 43)
+Fresh tab, no console errors. `getComputedStyle(.testimonials).backgroundColor` confirmed
+`rgba(0, 0, 0, 0)` (no tint). Compared `getBoundingClientRect()` of `.testimonials__mark` against its
+parent `.testimonials__card` — mark's top/left/right all fall within the card's bounds, confirming
+nothing is clipped.
+
+## Round 44 — Testimonials shadow reduced; Chef's Corner de-genericized with 2 new sections
+
+Client: "testimonials card ka box shadow kam karo" (reduce it), and separately "chef's corner page me
+bhi tint background repetitive lag raha hai hai kuch alag use karo. bahot common UI bana rahe ho tum.
+also us page me kuch aur sections add karo related to chef's corner".
+
+**Testimonials shadow.** `.testimonials__card`'s shadow was still the shared `--shadow-card`/
+`--shadow-card-hover` tokens even after round 43's other fixes — replaced with a scoped, lighter
+shadow (`0 1px 2px rgba(23,20,15,0.03)` resting, `0 4px 12px rgba(23,20,15,0.08)` on hover) rather than
+touching the shared tokens, which other components still rely on at their original weight.
+
+**Chef's Corner overhaul.** The page had drifted into reusing the same `section--tint` gray band on
+both `ChefKitchens` and `ChefCta` (the same surface `ContactVisit` and every other CTA banner already
+uses) — flagged as generic/repetitive. Fixes:
+- `ChefKitchens` dropped `section--tint` for its own warm parchment surface (`#f6ecd9`, a genuinely
+  different hue, not a gray) with a scoped paper-grain overlay (same inline-SVG `feTurbulence`
+  technique as the About page's grain, `mix-blend-mode: multiply` here for a warmer read). Cards
+  became "recipe index cards": cream fill, dashed border, a small alternating tilt per card that
+  straightens on hover, instead of a flat bordered box.
+- `ChefCta` dropped `section--tint` for an "order ticket" treatment: plain page background, dashed
+  top/bottom rules standing in for a perforated ticket edge, red kept only on the button.
+- Two new sections added, both genuinely new content, not just restyled existing data:
+  - **`ChefMenu`** (`chefMenu` in `content.js`) — a dark `section--invert` band showing the week's
+    actual rotation, Monday through Sunday (Sunday styled dashed/muted, since the site's real
+    no-Sunday-service fact applies here too), placed between `ChefDay` and `ChefKitchens` as a
+    light/dark/light beat instead of every section reading the same tone.
+  - **`ChefHygiene`** (`chefHygiene` in `content.js`) — a plain-white 4-item trust strip (reusing
+    `Icon.jsx`'s existing icon set: kitchen/verified_user/assignment_turned_in/group), the kitchen-side
+    equivalent of the homepage's Six Sigma/ISO strip, placed between `ChefKitchens` and `ChefCta`.
+- Page order is now: Hero → Spotlight → Day → **Menu (new)** → Kitchens (restyled) → **Hygiene (new)**
+  → Cta (restyled).
+
+Separately investigated the client's "image gallery rotate nahi ho rahi hai" report: `Gallery.jsx`'s
+auto-drift is driven by `gsap.ticker` advancing `scrollLeft`, which depends on `requestAnimationFrame`.
+Checked `document.visibilityState` in the preview pane and it reports `"hidden"` even on the fronted
+tab — a known limitation already in [[feedback-browser-pane-verification]] (rAF throttled/suspended for
+backgrounded tabs), not something fixable from this session. Code review of `Gallery.jsx` found no
+logic defect (`setWidthOf` returns a correct non-zero value, the ticker registration is unconditional
+outside `prefers-reduced-motion`) — could not confirm or reproduce the reported freeze; needs checking
+in an actual foregrounded browser tab (e.g. the network URL from round "server run karo" on a phone),
+not through this pane.
+
+### Verification (round 44)
+Fresh tab, no console errors. Testimonials: `getComputedStyle` box-shadow confirmed the new lighter
+values. Chef's Corner: `get_page_text` confirmed all 7 sections render (Hero, Spotlight, Day, Menu,
+Kitchens, Hygiene, Cta) with correct copy; computed styles confirmed `.chef-kitchens` background
+`rgb(246, 236, 217)` (not gray tint), a real `rotate(...)` transform matrix on `.chef-kitchens__card`,
+`.chef-menu` background `rgb(55, 52, 53)` (dark invert), and `.chef-cta__inner` `border-top-style:
+dashed`.
+
+## Round 45 — Weekly rotation: dark background dropped, structure changed
+
+Client: "chef's corner me jo week rotation hai usme bg me dark color mat usko karo also uska structure
+bhi change karo" — the `ChefMenu` section's dark `section--invert` band (added round 44) and its 7-tile
+grid structure both needed to change, not just the color.
+
+Rebuilt `ChefMenu.jsx`/`.css` from a dark 7-column grid of boxed day-tiles into a single bordered
+"menu card" holding one row per day — day name and dish joined by a dotted leader line (`.chef-menu__leader`),
+like a printed restaurant table d'hôte menu, each row separated by a hairline rule instead of each day
+being its own tile. Plain page background (no `section--invert`), Sunday's row styled italic/muted
+rather than dashed-border, matching the new row-based structure. Below 700px the leader is hidden and
+the dish wraps to its own line under the day name.
+
+### Verification (round 45)
+Fresh tab, no console errors. `getComputedStyle(.chef-menu)` confirmed transparent background (was
+`rgb(55, 52, 53)`) with dark-on-light text; 7 `.chef-menu__row` elements confirmed inside one
+`.chef-menu__card`, dotted leader element present. `get_page_text` confirmed all 7 days/dishes still
+render correctly in the new structure.
+
+## Round 46 — Weekly rotation card gets a paper surface
+
+Client: "jo abhi chef menu add kia hai uske plain bg me kuch aur kar sakte hai kya?" — the menu card's
+plain page background (from round 45) was open to something more.
+
+Gave `.chef-menu__card` a warm cream surface (`#fffaf0`, the same tone `ChefKitchens`' recipe cards
+use) with a scoped low-opacity grain texture and a printed-menu double-rule top/bottom border (was a
+flat 1px solid), plus a soft lift shadow — ties this section and `ChefKitchens` together as "the same
+material" (a printed menu on paper) rather than the card floating on bare white next to a textured
+section. Row structure and dotted leaders from round 45 are unchanged, per that round's "don't change
+the structure again" framing — this was a surface-only follow-up.
+
+### Verification (round 46)
+Fresh tab, no console errors. `getComputedStyle(.chef-menu__card)` confirmed `background-color:
+rgb(255, 250, 240)`, `border-top-style: double` at 3px, and a `box-shadow` present; all 7 rows still
+render (`get_page_text`).
+
+## Round 47 — Weekly rotation gets menu-page touches
+
+Client: "aur thematic add lar sakte hai kya? like jaise menu page hota hai vesa?" (can we add more
+theming, like an actual menu page would have?).
+
+Added four small menu-page conventions on top of the round 45/46 card, no structural change:
+- **Flourish rule** (`.chef-menu__ornament` — line, diamond, line) centred under the section heading,
+  before the card.
+- **Utensil mark** — `Icon.jsx`'s existing `restaurant` glyph, muted, before each day name.
+- **"Today" badge** — the row matching the visitor's actual current day gets an accent pill; computed
+  client-side from `new Date().getDay()` (remapped since JS weeks start Sunday and `chefMenu` starts
+  Monday). Purely decorative/illustrative, not tied to real kitchen scheduling.
+- **Sign-off line** — an italic closing line under the card ("— cooked fresh, one kitchen at a time."),
+  the kind of small signed note a printed menu closes on.
+
+### Verification (round 47)
+Fresh tab, no console errors. Confirmed via DOM query that the "Today" badge landed on the row whose
+day name is "Friday" — the actual current date in this session is 2026-08-07, a Friday, so the
+client-side date logic is correct. Ornament, all 7 utensil icons, and the sign-off line all confirmed
+present via `get_page_text`/DOM query.
+
+## Round 48 — Weekly rotation: card letterhead + corner brackets
+
+Client: "something more you can add, it should like menu card somewhat" — one more pass to make the
+card itself read as a physical menu card, not just a styled list.
+
+Restructured `.chef-menu__card` from `<ol>` directly to a `<div>` wrapper (`.chef-menu__card`)
+containing: 4 absolutely-positioned corner brackets (`.chef-menu__corner--tl/tr/bl/br`, each just two
+border sides meeting at an L — the classic certificate/menu-card frame cue, no image asset), a
+centred italic letterhead line ("Weekly Set Menu", separate from the section's own `AnimatedHeading`
+above it — the card now has its own title, like a real menu would), then the existing day/dish list
+(moved to a nested `.chef-menu__list`) and sign-off line, both now inside the card rather than
+siblings after it.
+
+### Verification (round 48)
+Hit a stale HMR console error on the long-lived `seed` tab immediately after the edit ("Failed to
+reload ChefMenu.jsx") — opened a fresh tab per the project's known stale-console-buffer pattern
+([[feedback-browser-pane-verification]]) and confirmed **no actual error**: page renders correctly,
+letterhead reads "WEEKLY SET MENU", all 7 rows present, sign-off line present. Confirmed all 4 corner
+brackets have the correct two-sided border (`2px/2px`, `2px/0`, `0/2px`, `0/0` combinations forming
+each L-shape).
+
+## Round 49 — Weekly rotation: veg-mark + "Est. 1890" subline
+
+Client: "abhi bhi modify ho sakta hai thoda menu card jaisa jaise restaurants me hota hai" — one more
+pass specifically toward how a real (Indian) restaurant menu looks.
+
+Added `veg: true` to each `chefMenu` entry in `content.js` (every dish in this illustrative rotation
+happens to be vegetarian — noted in the comment as specific to this dummy menu, not a claim about the
+real service) and a `.chef-menu__veg` mark next to each dish: the green square-and-dot every Indian
+menu prints for a vegetarian item (the FSSAI labelling convention), using plain hex green (`#2e7d32`)
+rather than a design token — same reasoning as the site's photo scrims: this is a fixed regulatory/
+semantic color, not a themable brand one. Also added a second, smaller letterhead line, "Est. 1890"
+(a real fact, the network's actual founding year) under "Weekly Set Menu", the way a restaurant card
+often pairs its name with an establishment date.
+
+### Verification (round 49)
+Fresh tab, no console errors. Confirmed 6 `.chef-menu__veg` marks (Monday–Saturday; Sunday correctly
+excluded, it has no dish) and the `"Est. 1890"` line present via DOM query, all 7 rows still intact.
+
+## Round 50 — Per-dish icons on the weekly rotation
+
+Client: "kuch icon vagera use nahi kar sakte kya tum?" — every row was using the same generic
+`restaurant` utensil glyph; asked for actual icon variety.
+
+Fetched 5 new Material icon paths (`rice_bowl`, `dinner_dining`, `ramen_dining`, `tapas`,
+`brunch_dining`, `event_busy`) via `curl` directly against the same `@material-icons/svg` CDN the
+existing `Icon.jsx` registry already sources from — fetched the raw SVG files rather than trusting a
+summarized description (an earlier `WebFetch` call mischaracterized the `rice_bowl` file as "a battery
+icon" despite returning the correct path data; `curl` avoids that failure mode by returning the actual
+file content instead of a paraphrase). Added all 6 to `Icon.jsx`'s `PATHS` registry.
+
+`chefMenu` entries in `content.js` each got an `icon` field matched to the dish: rice_bowl for the two
+rice-based days (Mon/Sat), dinner_dining for the roti-thali days, tapas for the Gujarati thali (small
+plates), ramen_dining for khichdi-kadhi (a bowl dish), brunch_dining for the South Indian meal, and
+event_busy (a calendar with an X) for Sunday's no-service row instead of a food icon. `ChefMenu.jsx`
+now renders `item.icon` per row instead of a hardcoded `restaurant` for all seven.
+
+### Verification (round 50)
+Fresh tab, no console errors. Confirmed all 7 rows render an icon `<svg>`, and counted 6 distinct path
+shapes across the 7 rows (rice_bowl intentionally repeats for Monday and Saturday, both rice dishes —
+by design, not a bug).
+
+## Round 51 — About page: real-history content + structural redesign
+
+Client: "about page me bhi content add karo dummy, placeholder text mat use karo. Also pura page ko
+redesign karo" (add dummy content to the About page too, don't use placeholder text — also redesign
+the whole page).
+
+**Content.** All "Placeholder"/"Dummy" copy in `content.js`'s About exports replaced. Story/Values/
+Timeline lean on facts already established elsewhere on this site rather than inventing history: the
+1890 Parsi-banker founding, Mahadeo Havaji Bachche formalising the team-delivery model, the 1998 Forbes
+Six Sigma rating, the 2005 IIM Ahmedabad case study/Prince Charles visit, and the current ISO
+certification/5,000-dabbawala/200,000-meal figures — all already real facts used elsewhere on the site
+(`about`, `recognition`), now retold as a proper chronological Timeline instead of 5 fabricated
+"Placeholder milestone" entries. Only `aboutTeam` stays illustrative/invented (named roster), same
+disclosure convention Chef's Corner uses for its kitchens — eyebrow changed from "Placeholder team" to
+"Illustrative roster", roles mapped to services genuinely listed elsewhere on the site (seminars, client
+relations, Roti Bank) rather than invented functions.
+
+**Structural redesign**, section by section:
+- `AboutHero` — added a floating stat card (`aboutHero.stat`, "134 / Years running, coded by hand") in
+  the photo's corner, borrowing Home's own hero-badge convention so this page's opening beat matches
+  the rest of the site instead of being a one-off.
+- `AboutStory` — image and copy swapped (image now leads), the reverse of the Contact/Chef's Corner
+  spotlight split, so About's intro doesn't open on the same "photo-left" beat every other sub-page
+  hero already uses.
+- `AboutValues` — rebuilt from numbered hover-reveal rows (a pattern already used across several past
+  redesign rounds) into an image-forward 2×2 bento grid, closer to Framework's tile treatment on Home.
+- `AboutTeam` — rebuilt from a big-initials card grid into staff-directory rows (avatar circle, name/
+  role, and a "focus" tag pill) — a genuinely different layout, not the same card shape restyled.
+- `AboutTimeline` and `AboutCta` kept their existing structure (zig-zag milestone list;  compact
+  `section--tint` banner) — both had already been through dedicated redesign rounds this session and
+  reworking them again would have been pure churn; they got the content update only.
+
+### Verification (round 51)
+Fresh tab, no console errors. `get_page_text` confirmed all 6 sections render the new copy correctly,
+including the full chronological Timeline and all 4 Team roster rows. Confirmed via DOM query: hero
+stat value "134", 4 `.about-values__tile` elements, 4 `.about-team__row` elements. The 4 Values tile
+images reported `complete: false` in this pane — consistent with the already-documented
+`loading="lazy"` + headless-pane limitation ([[feedback-browser-pane-verification]]), not a new defect;
+confirmed all referenced image files exist on disk instead.
+
+## Round 52 — Timeline UI changed to a horizontal scroll-snap roadmap
+
+Client: "timeline ka Ui change karo" — the vertical zig-zag milestone list (kept as-is in round 51,
+since it already had a dedicated redesign round) was asked to change after all.
+
+Rebuilt `AboutTimeline.jsx`/`.css`: the up/down alternating list is gone, replaced with a horizontal
+scroll-snap strip (`overflow-x: auto`, `scroll-snap-type: x proximity`, native drag/wheel/touch scroll
+— same underlying technique as `Gallery`'s track, no JS animation loop). One connecting line runs
+left-to-right behind a dot per stop; year sits above the dot, the image+title+text card below it. Each
+stop is `scroll-snap-align: center` and fixed-width so stops settle into place rather than stopping
+mid-card.
+
+### Verification (round 52)
+Fresh tab, no console errors. Confirmed 5 `.about-timeline__stop` elements, `scrollWidth` (1736px)
+greater than `clientWidth` (759px) confirming the track actually overflows and scrolls, and a scripted
+`scrollLeft` change landed at a snapped position (488.5, not the raw 400 requested) confirming
+scroll-snap is active. `get_page_text` confirmed all 5 milestones still render correctly.
+
+## Round 53 — Timeline rebuilt around React Bits' OptionWheel
+
+Client asked (after being offered vertical-list/numbered-steps/compact-strip alternatives) to instead
+add React Bits' `OptionWheel` component to the timeline, with the literal `npx shadcn@latest add
+@react-bits/OptionWheel-JS-CSS` install command.
+
+Same reasoning as the earlier `@21st-dev/cli`/`marquee-01` request: didn't run the shadcn CLI (it wants
+a `components.json`, a Tailwind-shaped scaffold this plain-CSS project doesn't have). Instead fetched
+the component's registry JSON directly (`curl https://reactbits.dev/r/OptionWheel-JS-CSS.json`) — it
+declared **zero** `registryDependencies`/`dependencies`, confirming the "JS-CSS" variant really is
+framework-free, so the exact source could be hand-ported safely: `OptionWheel.jsx` + `.css` copied
+verbatim into `src/components/about/`, only the color props changed at the call site (`textColor="var(--color-text-muted)"`,
+`activeColor="var(--color-text-accent)"` instead of hardcoded hex) so it themes off this project's
+tokens instead of introducing new hardcoded colors.
+
+Rebuilt `AboutTimeline.jsx`: the horizontal scroll-snap strip (round 52) is gone. Now a two-column
+layout — the wheel (scroll/drag/arrow-keys through the 5 milestone years) on the left, a card showing
+the selected milestone's photo/title/text on the right, updating via the wheel's `onChange` into local
+`useState`. The card is keyed on `active.year` so it gets a small fade-in on every selection change
+(guarded by `prefers-reduced-motion`).
+
+### Verification (round 53)
+Fresh tab, no console errors. Confirmed 5 `.option-wheel__item` elements, "1890" selected by default
+with matching card title "One tiffin, one dabbawala". Scripted a click on the "Today" wheel item and
+confirmed both the wheel's selected item and the card content updated correctly ("Today" /
+"ISO-certified, still by hand") — the state update path doesn't depend on the component's internal
+`requestAnimationFrame` easing loop settling, so it works even though rAF is known to be throttled in
+this preview pane ([[feedback-browser-pane-verification]]).
+
+## Round 54 — Timeline: pinned on scroll instead of manual wheel-only
+
+Client: "when i am land on the timeline section it should get pinned an the year & respective content
+has to change on scroll" — round 53's OptionWheel required manually dragging/clicking the wheel; the
+ask was for landing on the section + normal scrolling to drive it.
+
+Two changes:
+1. **`OptionWheel.jsx` gained an optional `selected` (controlled position) prop** — not part of the
+   original React Bits source. When set, a new `useEffect` calls the component's own internal
+   `applyTarget(selected, true)`, letting an external driver move the wheel without going through
+   drag/click/keyboard. Existing uncontrolled usage is unaffected (`selected` defaults to `undefined`,
+   effect no-ops).
+2. **`AboutTimeline.jsx`** now creates a `ScrollTrigger` (same library/pattern `VideoScroll.jsx` already
+   uses for its pinned image-sequence section — `pin: true`, `scrub`, `onUpdate` mapping
+   `self.progress` to an index) that pins the whole section for `(STEPS - 1) * innerHeight * 0.8` of
+   extra scroll (4 steps × ~576px at 720p, `end` as a function so it re-resolves on resize/refresh
+   rather than baking in a stale viewport size). The resulting index drives both the card content and
+   the `OptionWheel`'s new `selected` prop, so the wheel visually tracks the scroll instead of sitting
+   still until dragged. `ScrollTrigger.refresh()` called at the end of the effect, matching
+   `VideoScroll`'s convention, though this pin (unlike `VideoScroll`'s) is created synchronously at
+   mount rather than gated behind an async image-preload, so it shouldn't hit the
+   [[project-dabbawala-scrolltrigger-pin-priority]] ordering bug that motivated `refreshPriority` there.
+
+### Verification (round 54)
+Hit the documented [[feedback-zero-viewport-measurement]] bug directly: the first tab tested had
+`window.innerHeight`/`innerWidth` at 0 when the pin's `end` distance was calculated, producing a
+near-zero pin spacer (1401px). Opened a genuinely fresh tab with real dimensions (1280×720) and
+confirmed the spacer recalculated correctly (3066px, comfortably above the 2304px minimum expected).
+Confirmed a real scroll-driven transition: scrolling into the section showed "1890"/"One tiffin, one
+dabbawala" at the top, and after scrolling further + a short wait the wheel and card both advanced to
+"1998"/"Six Sigma, on paper" — confirming the ScrollTrigger → index → OptionWheel wiring works.
+Could not get further transitions (2005/Today) to register within this session despite additional
+scrolling — consistent with [[feedback-browser-pane-verification]]'s documented rAF-throttling-on-
+backgrounded-tabs limitation (`document.hidden` stayed `true` throughout, even after explicitly
+fronting the tab), not a code defect found on review. No console errors at any point. Recommended the
+client confirm the full smooth scroll feel on a real device via the network URL from the earlier
+"server run karo" round, where the tab won't be backgrounded.
+
+## Round 55 — Timeline pin: real bug found and fixed, GSAP pin replaced with native sticky
+
+Client reported the round-54 scroll-pin genuinely wasn't working ("abhi kaam nahi kar raha", confirmed
+via a clarifying question rather than guessed at).
+
+**Found a real bug on code review**, not just a pane artifact: `AboutTimeline`'s section used
+`section--slab section--tint`. `.section--slab` sets `overflow: hidden` — and any ancestor with
+`overflow` other than `visible` constrains how far a `position: sticky`/pinned descendant can stick,
+which is exactly the kind of ancestor style `VideoScroll.jsx` (the site's other pinned section)
+deliberately avoids by not using `section--slab` at all. This was present under the GSAP-pin version
+too and is a plausible root cause for it never visibly pinning/advancing for the client.
+
+Used the opportunity to also de-risk the mechanism itself: replaced the GSAP `ScrollTrigger` pin
+(fixed-position + spacer, `end` computed from `window.innerHeight` at creation time, `scrub`-smoothed)
+with a **native `position: sticky`** approach — a tall scroller (`STEPS * 100vh`) wrapping a
+`position: sticky; top: 0; height: 100vh` pin, with a plain `scroll`/`resize` listener computing
+progress directly from `getBoundingClientRect()` and driving `setIndex`. This removes every failure
+surface the GSAP version had (spacer math, Lenis+fixed-position interaction, the zero-viewport timing
+bug, scrub-smoothing lag) — no GSAP/ScrollTrigger involved in this section at all now. Initially wrote
+the scroll handler gated behind `requestAnimationFrame`; changed to call the update function directly
+off the scroll/resize event instead, since a `getBoundingClientRect` + conditional `setState` is cheap
+enough not to need rAF, and it removes a dependency on rAF being scheduled promptly. `section--slab`
+dropped from the section entirely (kept `section--tint` for the background band — that class alone has
+no overflow side effect).
+
+### Verification (round 55)
+Fresh tab, no console errors. Confirmed `position: sticky` computed on `.about-timeline__pin` and the
+scroller's height exactly `STEPS × innerHeight`. Manually computed the expected progress/index from
+`getBoundingClientRect()` at a known scroll position and got index 4 ("Today") — matched. Confirmed the
+update pipeline fires correctly by dispatching a synthetic `scroll` event and checking the DOM in a
+**separate** tool call afterward (checking in the same script as the dispatch is invalid — React defers
+the resulting re-render past that synchronous script, so an immediate same-tick check always shows
+stale content regardless of whether the update actually worked). With that corrected test methodology,
+confirmed the wheel and card update correctly. Real `window.scrollTo()` did not trigger a visible update
+within this session even after waiting — this pane also suppresses genuine native `scroll` event
+dispatch for backgrounded tabs (`document.hidden` stayed `true` throughout), a separate, harder
+limitation than the already-documented rAF throttling. `window.addEventListener('scroll', ...)` is
+standard, universally-supported behavior with no exotic requirements, so this should work normally for
+the client in an actual focused browser tab; recommended confirming there rather than in this pane.
+
+## Round 56 — Timeline: fixed a real vh-vs-innerHeight mismatch
+
+Client: "kya each year k liye content different hai?" then, after confirmation the data/rendering was
+correct, "okay toh mujhe ye nahi show ho raha hai? alag alag info" — i.e. it still wasn't changing for
+them even after round 55's sticky rebuild and slab fix.
+
+Found a second real bug: the scroller's height was set via a `100vh` **CSS** unit
+(`${STEPS * 100}vh`), while `update()`'s scroll-progress math used `window.innerHeight` in **JS**. On
+mobile browsers these two disagree — `100vh` is sized against the *largest* possible viewport (address
+bar collapsed), `window.innerHeight` reports the *current* one (address bar visible), a gap of
+50-100px that's real and well-documented, not specific to this project. That mismatch is enough to
+throw off the progress calculation, especially over a run of several viewport-heights of scroll.
+
+Fixed by driving both the scroller and the pin's height from the same JS-measured `window.innerHeight`
+(stored in a `vh` state value, recalculated on every resize/scroll event) instead of a `100vh` CSS
+unit — both boxes and the scroll-progress math now always agree, on any device. Also hardened against
+the already-known zero-viewport bug: `update()` now skips entirely when `window.innerHeight < 100`
+rather than trusting a bogus reading and collapsing the scroller to 0 height.
+
+### Verification (round 56)
+Hit the pane's viewport-instability issue directly during this check: `window.innerHeight` returned
+different values across successive calls within the same tab *without* a real resize event firing
+between them (720 at one point, 455 moments later) — confirmed this is a pane/tooling artifact and not
+a code bug by manually dispatching a `resize` event and observing the component immediately
+self-correct (`scrollerHeight` became exactly `5 × innerHeight` again). A real browser only changes
+`innerHeight` in response to a genuine resize/orientation-change event, which this component already
+listens for, so this specific instability shouldn't occur for the client. End-to-end: scrolled deep
+into the section and confirmed both the wheel and the card updated to "Today"/"ISO-certified, still by
+hand". No console errors throughout.
+
+## Round 57 — Home FAQ section added; About Team redesigned again
+
+Client: "home page me FAQ bhi add kar do", then mid-turn: "about me jo team ka section hai uska UI
+redesign kari".
+
+**Home FAQ.** New `faq` export in `content.js` — 6 questions, each answer restating facts already
+established elsewhere on the site (booking via phone/email, the coding system, the Six
+Sigma/ISO rating, seminar/"A Day With a Dabbawala" bookings, the Roti Bank helpline, no app/GPS
+involved) rather than inventing new claims. New `FAQ.jsx`/`.css` — single-open accordion,
+`aria-expanded`/`aria-controls` wired properly, first question open by default. Placed on `Home.jsx`
+between `AppPromo` and `Contact` (answer objections right before the CTA). Added a "FAQ" entry to
+`footerLinks.useful` (`/#faq`).
+
+**About Team, third redesign this project.** Went from a big-initials card grid → roster rows (round
+51) → now **ID-badge cards**: a lanyard-clip notch at the top of each card, a centred initials badge,
+name/role, and the "focus" tag styled as a dashed-rule barcode strip at the bottom — visually distinct
+from both earlier treatments, not just the row list re-boxed.
+
+### Verification (round 57)
+Fresh tab, no console errors on `/` and `/about`. FAQ: 6 `.faq__item`s confirmed, first open by
+default (`aria-expanded="true"`), clicking a different question correctly closed the first and opened
+only the clicked one (confirmed via `aria-expanded` array across all 6). Team: 4 `.about-team__card`s
+confirmed with correct name/role/focus content.
+
+## Round 58 — FAQ switched to a 2-column grid
+
+Client: "Faq ka ko divide karo grid me 2x2" — the single-column accordion list became a 2-column grid
+(6 items → 3 rows × 2 columns).
+
+`.faq__list` changed from a single bordered list (shared top/bottom rules) to `display: grid;
+grid-template-columns: repeat(2, ...)`, since a shared-divider list doesn't make sense once items sit
+side by side. Each `.faq__item` is now its own bordered card instead, with the border accenting
+(`:has(.faq__question[aria-expanded='true'])`) when its question is open. Collapses to 1 column under
+700px.
+
+### Verification (round 58)
+Hit the zero-viewport bug again on the first check (`innerWidth: 0` made the mobile 1-column media
+query apply) — confirmed correct on a fresh tab with real width (1280px): items 0/1 share the same
+`top` with different `left` values (side-by-side), item 2 starts a new row — a genuine 2-column grid,
+not a coincidental stack. Re-confirmed single-open accordion behavior still works inside the grid
+(checked in a separate call after the click, not the same script — checking in the same script shows
+stale state before React's re-render, a mistake made and corrected earlier in this session too).
+
+## Round 59 — Blog archive + individual post redesigned, ref: litmus.com/blog
+
+Client: "blog ka individual aur archive page ka UI redesign karo, ye rahi ref link:
+https://www.litmus.com/blog". Fetched a structural description of that page (no content/branding
+copied) — key patterns: featured article as the hero, a horizontal category-filter bar with a
+newest/oldest sort below it, and the rest of the posts as a plain chronological row list with no card
+borders, not a card grid.
+
+**BlogHero** simplified: dropped the two-column layout, the category pills, and the "Also new" preview
+card (that preview was redundant with `BlogGrid`'s own featured post directly below it, and litmus's
+hero is just the featured article + meta, not a second preview). Now a single centred statement +
+subtext, closer to that reference.
+
+**BlogGrid** rebuilt: kept the top featured-post treatment, added a real horizontal filter bar
+(`CATEGORIES` derived from `blogPosts`, `All` + each category as a toggle button, single-select) and a
+Newest/Oldest sort toggle — `blogPosts` is already newest-first, so "Oldest" is just `[...filtered].reverse()`,
+no date parsing needed. The "rest" list changed from a 3-column card grid to a borderless chronological
+row list (thumbnail + category/date + title + excerpt, hairline rule between rows) matching the
+reference's plain-feed look. List is keyed on `${category}-${sort}` so `useSectionFx`'s once-only reveal
+re-triggers cleanly on every filter/sort change instead of leaving stale opacity on reused nodes.
+
+**BlogPost** (individual page): added a computed read-time to the meta row (`words / 200`, rounded,
+minimum 1) — litmus.com/blog leads its meta row with a read-time estimate. Did **not** re-enlarge the
+post title back to the page's full display size, even though litmus's own headlines are large — that
+size was deliberately shrunk in round 41 per explicit client feedback ("blog heading... should be
+smaller"), and this redesign round didn't reopen that decision.
+
+### Verification (round 59)
+Fresh tab, no console errors on `/blog` and a post detail page. Confirmed the filter bar renders all 8
+category buttons (All + 7 categories) and the sort toggle; clicking "Product" correctly narrowed the
+row list to exactly the 2 Product-tagged posts; clicking "Oldest" on that filtered set correctly
+reversed their order (confirmed both titles in the new order via DOM query). Confirmed the post page's
+meta row now reads "Operations · Jan 2026 · 1 min read" — the read-time is computed, not hardcoded.
+
+## Round 60 — Header logo shrunk; blog posts got longer with subheadings
+
+Client: "also header me jo logo hai uski size kam karo", then "individual blog me aur content add kar
+sakte hai kya hum? thoda lengthy as in" (declined to use externally-sourced trademarked logos for the
+"As featured in" strip in the same turn — see conversation; kept as plain type, no logo files were
+added from the links supplied).
+
+**Header logo.** `.header__brand img` width cut from 250px to 160px (110px was already the mobile
+override at ≤600px, cut further to keep it proportionally smaller there too — this wasn't touched, it's
+now 110px next to a 160px base instead of 150px next to 250px).
+
+**Blog posts, longer with real structure.** `blogPosts[].body` changed from a flat array of paragraph
+strings to a mixed array of paragraph strings and `{ heading }` subhead blocks. All 10 posts got 2
+subheadings and roughly double the paragraph count each, extending the same voice/facts already
+established (e.g. "the-code-on-every-lid" now explains where the coding system's colour-to-alphanumeric
+switch came from, and what happens when the code itself is wrong — new detail, not filler restating the
+excerpt). `BlogPost.jsx`'s renderer and `readTime()` word-count helper both updated to handle the mixed
+array (`textOf()` skips heading blocks when counting words for the read-time estimate; heading blocks
+render as `<h2 className="blog-post__subhead">`).
+
+### Verification (round 60)
+Fresh tab, no console errors. Hit the zero-viewport bug again trying to read `getComputedStyle` widths
+directly (`innerWidth: 0` on several successive fresh tabs this round) — confirmed the logo shrink
+visually instead via a full-page screenshot, which isn't affected by that measurement bug: the header
+logo is visibly smaller relative to the nav links and CTA button. Confirmed via `get_page_text` on "The
+code on every lid, decoded" that both new subheadings render ("Three characters, three decisions", "Why
+it survives without a dispatcher", "What happens when it fails") and the read-time recalculated
+correctly to "2 MIN READ" (was 1) now that the post is longer.
+
+## Round 61 — Home's SVG thread animation: real bug found (in a different component)
+
+Client: "home page me jo svg line animation hai wo issue de raha hai", clarified via a follow-up
+question as "scroll pe lag/jerky ho raha hai" (janky/stuttery on scroll).
+
+**First fix (smoothing), later found to be secondary.** `About.jsx`'s scroll-drawn thread lines wrote
+`strokeDashoffset` straight from raw scroll progress on every `onUpdate` tick — no smoothing, so any
+irregular scroll-event timing under Lenis showed up as visible stutter. Changed to `gsap.quickTo` per
+thread (0.25s `power2.out` ease) so the line eases toward each new target instead of hard-jumping to
+it; a `ScrollTrigger` `onRefresh` still snaps the offset exactly (no easing) so refreshes/resizes land
+on the correct resting position instead of easing in from a stale one. The milestone pop-in logic still
+reads raw (non-smoothed) progress, so that timing is unaffected.
+
+**The actual root cause, found while verifying the above.** Testing revealed `.video-scroll` (a
+completely different component, Home's pinned image-sequence section higher up the page) was rendering
+at **89,317px tall** — pushing `About` and everything below it thousands of pixels down the page, which
+is what actually made the thread animation (and everything else on the page) feel broken/jerky: by the
+time a scroll reaches `About`, the reader has scrolled through an enormous stretch of near-empty space.
+Root cause: `VideoScroll.jsx`'s `ScrollTrigger` used `end: '+=350%'` — a percentage of the *trigger
+element's own height* — but that same element is also the pin's container, so once pinned, its
+rendered height *is* the spacer height GSAP just inserted. `Layout.jsx` calls `ScrollTrigger.refresh()`
+on every route change; each refresh recalculated 350% against the *previous* refresh's already-inflated
+height, compounding roughly 3.5x per refresh. A handful of route changes during this session was enough
+to reach 89,317px. Fixed by switching `end` to a stable, non-self-referential value:
+`+=${Math.max(window.innerHeight, 600) * 3.5}` — viewport height doesn't change from the pin's own
+spacer, so it can't feed back into itself the same way; the `Math.max(..., 600)` guards against the
+already-documented zero-viewport measurement bug feeding in a near-zero distance instead.
+
+### Verification (round 61)
+Fresh tab, no console errors. Caught the actual bug by measuring `.video-scroll`'s rendered height
+directly (89,317px) rather than trusting the About section's own trigger math — the smoothing fix alone
+would not have addressed the real symptom. After the `end` fix: fresh load measured `videoScrollHeight:
+2100` (`Math.max(0, 600) * 3.5`, confirming the zero-viewport guard fired as expected on that check).
+Reproduced the exact original compounding trigger — 3 real client-side round-trip navigations between
+`/`, `/about`, and back via actual `<a>` clicks (not full reloads, to genuinely exercise
+`Layout.jsx`'s per-route-change `ScrollTrigger.refresh()`) — and confirmed `videoScrollHeight` stayed
+at exactly 2100px afterward, not compounding.
+
+## Round 62 — New page: Menu Calendar
+
+Client: "menu calendar karke ek page banao jisme menu's listed ho by category(veg,nonveg), thalis
+(gujrati,maharashtrian,punjabi,south indian)".
+
+New route `/menu-calendar`, `src/pages/MenuCalendar.jsx` — Hero → Board → Cta, components in
+`src/components/menu/`, following the same sub-page pattern as About/Contact/Chef's Corner (photo
+hero, compact `section--tint` closing CTA).
+
+**Data** (`content.js`): `menuCalendar` — one entry per region (Gujarati, Maharashtrian, Punjabi, South
+Indian), each with a 7-day `veg` array and a `nonveg` array (`null` for Gujarati — kept vegetarian-only
+here as a real thali tradition, not a limitation applied to the other three). All 42 dishes are
+illustrative dummy content written specifically per region/day, not generic placeholders.
+
+**`MenuBoard`** — two independent filters: thali-region pills (4) and a veg/non-veg segmented toggle,
+narrowing to one 7-day list (day + dotted leader + dish, same pattern as Chef's Corner's weekly-rotation
+card). Picking Gujarati while "Non-veg" was selected auto-falls back to veg and disables the non-veg
+button (with a title tooltip explaining why) rather than showing a broken/empty state. Veg/non-veg marks
+reuse the FSSAI square-and-dot convention from Chef's Corner's menu card (green square+dot for veg, a
+brown square+triangle for non-veg) — plain hex colors, not design tokens, since these are fixed
+regulatory marks.
+
+Header nav and footer `quick` links both got a "Menu Calendar" entry.
+
+### Verification (round 62)
+Fresh tab, no console errors, no server errors (`preview_logs`). `get_page_text` confirmed the default
+Gujarati/Veg view renders all 7 days correctly. Clicked through: Punjabi veg → correct 7 dishes,
+non-veg toggle enabled; toggled to Punjabi non-veg → correct 7 different dishes; clicked Gujarati while
+non-veg was active → confirmed auto-fallback to veg (`aria-pressed="true"` on the Veg button) and the
+non-veg button correctly disabled. Nav link confirmed present in the header.
+
+## Round 63 — Menu Calendar rebuilt as a dated photo-card grid
+
+Client shared a reference screenshot of a real date-based calendar UI (5-column card grid, one photo
+card per real date, "Today"/"Tomorrow" badges, muted past dates, a small veg/non-veg square indicator
+per card) and asked for something like it.
+
+Rebuilt `MenuBoard` from the plain 7-row weekday list into a rolling calendar: `buildDates()` generates
+real dates (2 days back through 11 days ahead, computed from the browser's actual `new Date()`, not a
+static Monday-first week) and cycles through the selected thali/diet's 7-day rotation to fill them, so
+"Today" and "Tomorrow" are genuinely today and tomorrow, not placeholders. Each dish entry in
+`menuCalendar` (`content.js`) changed from a single descriptive sentence to a `{ title, note }` pair
+(e.g. "Dal Bhaat & Rotli" / "With bataka nu shaak") to fit a card instead of a list row, across all 4
+regions × veg/non-veg. Added `menuCalendarPhotos` — an array of existing site images cycled one per
+card (no per-dish photo shoot exists for this demo).
+
+Card treatment: date + month, weekday, photo, title, note, and a veg/non-veg square-and-dot/triangle
+mark per card (same FSSAI convention used elsewhere). Today's card gets a 2px accent border + a "Today"
+badge; tomorrow gets a "Tomorrow" badge; already-past dates are faded to 45% opacity with a
+grayscale-filtered photo, so they read as history rather than live options.
+
+### Verification (round 63)
+Hit a stale HMR console error ("Objects are not valid as a React child") mid-edit on the long-lived
+tab — confirmed harmless on a fresh tab (no errors) per the project's established stale-console-buffer
+pattern. Confirmed on the fresh tab: 14 cards total, exactly 1 flagged `is-today` and 2 flagged
+`is-past`, both "Today"/"Tomorrow" badges present, all 14 cards show the veg mark by default
+(Gujarati/veg). Switched to Punjabi non-veg and confirmed all 14 marks flipped to the non-veg
+square-and-triangle, and the card flagged `is-today` showed a real Punjabi non-veg dish ("Chicken
+Curry") — confirming the calendar's dish-per-day mapping stays correct across filter changes.
+
+## Round 64 — Menu Calendar: two more sections
+
+Client: "okay abhi koi aur sections add karo" — round the new page out past Hero/Board/Cta.
+
+Added two sections to `src/pages/MenuCalendar.jsx`:
+- **`MenuHighlights`** (between Hero and Board) — an editorial 4-card image grid previewing all 4
+  regions at once (photo + one-line tagline each, e.g. Gujarati "Sweet, savoury and fried, often in the
+  same bite"), giving a sense of the range before narrowing to one region in the interactive board below.
+- **`MenuFaq`** (between Board and Cta) — a 4-question single-open accordion on ordering/customisation
+  (mixing regions across a week, switching veg/non-veg mid-week, spice level, allergies) — reuses Home's
+  `FAQ.css` classes directly rather than duplicating the accordion styles, with distinct content (not a
+  repeat of Home's booking/coding-system FAQ) and a separate `id="menu-faq"` so both can coexist if ever
+  linked to directly.
+
+### Verification (round 64)
+Fresh tab, no console errors. `get_page_text` confirmed all 5 sections now render in order (Hero,
+Highlights, Board, Faq, Cta) with correct content. Clicked a different `MenuFaq` question and confirmed
+via `aria-expanded` array that the accordion's single-open behavior works correctly on this page's
+instance too.
+
+## Round 65 — Menu Calendar images switched to object-fit: contain
+
+Client: "jo images use huye hai unko object fit contain karo" — scoped this to the Menu Calendar
+page's content images (`MenuHighlights` cards, `MenuBoard` calendar cards), not the page's hero
+background: the hero image is full-bleed with a scrim overlay, where `contain` would leave visible
+gaps rather than fix anything, so it stayed `cover`.
+
+Switched `.menu-highlights__image-frame img` and `.menu-board__card-image-frame img` from
+`object-fit: cover` to `contain`, and gave both frames a `background: var(--color-media-placeholder)`
+fill — `contain` never crops, so it can leave empty space around an image whose aspect ratio doesn't
+match its frame, and that space needs its own fill instead of showing whatever's behind it unevenly.
+
+### Verification (round 65)
+Fresh tab, no console errors. Confirmed via `getComputedStyle` that both `.menu-highlights__image-frame
+img` and `.menu-board__card-image-frame img` report `object-fit: contain`.
+
+## Round 66 — New page: Mumbai Dabbawala 2.0 waitlist (`/waitlist`)
+
+Client ask: a premium, production-ready waitlist landing page for a *fictional* modernized
+"Mumbai Dabbawala 2.0" — a capability exercise for visual design, responsive design, interaction
+design, accessibility and GSAP animation. Explicit anti-brief: must not read as a generic food-app
+template, a SaaS dashboard, or glassmorphism.
+
+Design was run through a 3-lead-plus-critique-plus-synthesis workflow (visual system / form+a11y
+architecture / motion+system-preview design, each independently researched against the real repo
+code, then two adversarial reviewers, then one synthesis pass) before any implementation, given the
+scope and the number of hard constraints (six real form states, five required breakpoints, a
+from-scratch mobile nav, an operations-console "System Preview" that must not look like a dashboard).
+
+**Route placement, decided with the user up front:** renders *inside* the existing `Layout`, not as a
+standalone shell — keeps the global skip-link/ScrollProgress/AnnouncementBar/Header/Footer and the
+single shared Lenis instance intact on this page and on the other 7 routes. The brief's own minimal
+nav ("Mumbai Dabbawala 2.0" / System / How it works / Waitlist / Join Waitlist) ships as
+`WaitlistNav.jsx`, a page-local sticky sub-bar below the global Header, not a replacement for it.
+
+**Imagery, also decided up front:** code-drawn only (inline SVG/CSS), zero new image assets — avoids
+both the "cheap food photography" the brief bans and this repo's rule against mapping unrelated
+scraped photos onto new copy.
+
+### What was built
+- `src/pages/Waitlist.jsx` + `.css` — page shell, token scope (`.wl-page`, reusing the site's existing
+  surface/text tokens rather than a new palette, plus two new accent hues and 3 display type sizes).
+- `src/components/waitlist/` — `WaitlistNav` (sticky sub-nav + from-scratch accessible disclosure
+  mobile menu, since **no mobile menu existed anywhere in this repo before this**), `WaitlistHero`
+  (badge, hand-broken H1, lead, form, `RoutePlate`), `RoutePlate` (subtle SVG tiffin-stack +
+  delivery-route line + one travelling token — the hero's required "subtle visual element"),
+  `WhySection` (three editorial passages, deliberately structurally different from each other so the
+  section doesn't collapse into a disguised card grid — a proof-driven explainer with a
+  `LidCodeMark` figure, a pull-quote, and a claim-plus-time-window graphic), `LidCodeMark` (the
+  dabbawala's real coded tiffin-lid mark, decoded in an adjacent caption), `SystemPreview` (the
+  "System Preview" control surface: a plain-text pickup manifest with glyph-coded state, an inline-SVG
+  sorting-hub convergence diagram, a route schematic with a chosen vs. candidate corridor and one
+  travelling token, and office drop-off lane bars — deliberately no KPI tiles, no live clock, no
+  colour-only status, so it reads as an operations surface rather than a SaaS dashboard), `FinalCta`
+  (closing statement + second form instance + a real/historical stats strip, captioned separately from
+  the System Preview's illustrative data).
+- `src/hooks/useWaitlistForm.js` — the six-state form state machine (default/focus/invalid/loading/
+  success/error) shared by both form instances via one component (`WaitlistForm.jsx`) mounted twice
+  with **independent** state per instance (a shared instance would collapse the hero form out from
+  under a user three screens below it). Deterministic error trigger for the no-backend demo: any
+  email ending in `.test` (RFC 2606 reserved, unreachable by accident, and it still passes the format
+  regex — proving "invalid" and "error" are genuinely different states). Success replaces the form and
+  moves focus to the success heading; the submit button's accessible name never changes (loading is
+  carried by `aria-busy` + a progress bar only, not by relabeling the focused button, which would
+  re-announce and race the "Adding you to the waitlist." status region).
+- `src/hooks/useDisclosureNav.js` — the mobile menu's Escape-to-close, focus-return-to-toggle, body
+  scroll lock (`getLenis()?.stop()`/`start()`), and a breakpoint-desync guard using `checkVisibility()`
+  (not `window.innerWidth`, which [[feedback_zero_viewport_measurement]] already flags as unreliable
+  at mount, and not `offsetParent`, which is null for fixed-position elements).
+- `src/hooks/useLoopRegistry.js` — pauses the two perpetual GSAP loops (hero + system-preview travelling
+  tokens) on `document.hidden`, on a footer-adjacent "Pause motion" toggle (the WCAG 2.2.2 mechanism
+  this repo didn't otherwise have for a continuous animation), and on their own ScrollTrigger leaving
+  the viewport.
+- `src/data/waitlist.js` — page copy and the System Preview's fictional dispatch data, isolated from
+  `content.js` since this is a fictional sub-brand, not the real site's copy.
+- `src/App.jsx` — one added `<Route path="/waitlist" element={<Waitlist />} />` inside the existing
+  `Layout` route. The other 7 routes are unchanged.
+
+### Real bug found and fixed
+`.wl-nav__scrim` (the mobile menu's dimming overlay) was `position:fixed;inset:0`, and it painted
+*over* the un-positioned `AnnouncementBar` and `Header` above the sticky sub-nav — despite both having
+a *higher* declared `z-index` than the scrim's stacking context. Root cause: a static (unpositioned)
+element always loses to *any* positioned sibling with `z-index >= 0`, regardless of the static
+element's own z-index value — the announcement bar's `z-index:100`-equivalent styling never entered
+the comparison because it isn't positioned. Fixed by anchoring the scrim to the nav's own box
+(`position:absolute; top:100%`) instead of the viewport, which also made it correctly follow the nav's
+height across the 64px/56px breakpoint change for free.
+
+### A debugging detour that turned out not to be a bug
+Chased a false "GSAP tweens never animate" defect through three components (a stroke-dasharray
+draw-in, a `scrollTrigger`-gated title reveal, a perpetual token loop) before finding that this
+session's browser preview tab reported `document.visibilityState === "hidden"` for its entire
+lifetime — a documented limitation ([[feedback_browser_pane_verification]]) where the pane's frozen
+rAF stalls every GSAP tween regardless of how it's written. Verified after the fact with a temporary
+`window.__GSAP`/`ScrollTrigger.update()` + manual `ticker.tick()` hook (removed before finishing) that
+all three original implementations were correct; `RoutePlate`'s draw-in was simplified to a plain
+fade-in group anyway (fewer moving parts for a decorative flourish), but the `FinalCta` reveal and the
+`SystemPreview` token loop needed no code change at all.
+
+### Known pre-existing bug surfaced, not fixed (out of scope)
+`.header__cta` ("Contact us" pill, `Header.css`) overflows the viewport by ~40px at ≤390px width — on
+**every** route, confirmed on `/about` as well as `/waitlist`. Not introduced by this work and not
+fixed here: it's shared chrome used by all 7 existing routes, outside this task's scope.
+
+### Verification (round 66)
+`npm run lint` clean (oxlint; only the 2 pre-existing unrelated `VideoScroll.jsx` warnings). `npm run
+build` clean. Confirmed via `document.documentElement.scrollWidth === clientWidth` at 1440/1024/768/
+375/390 that this page itself has **zero** horizontal overflow at any required width (the only
+overflow found traces to the pre-existing header bug above, confirmed by hiding `.header__cta` and
+re-measuring at 0 overflow). Walked all six form states on both form instances via `javascript_tool`
+(native input-value setter + `dispatchEvent` + real `button.click()`, since `computer{action:"click"}`
+and `computer{action:"scroll"}` both reliably time out in this session regardless of which page they
+target): empty-submit error + focus-to-input, invalid-format error, loading (`aria-busy`, readOnly
+input, non-disabled button, `role=status` announcement), success (form replaced, focus moved to the
+success heading, `ScrollTrigger.refresh()` ran), and the `.test` error path (assertive alert, focus
+undisturbed) — confirmed the hero and final-CTA instances hold state independently (one can be in
+`success` while the other is mid-error). Confirmed the mobile disclosure menu opens/closes correctly
+(`aria-expanded`, un-`inert`, body scroll lock, `data-wl-nav-open`), Escape closes it and returns focus
+to the toggle, and — after the scrim fix — the announcement bar and header remain undimmed and
+clickable while the panel is open. Confirmed the "Pause motion" toggle actually starts/stops the
+system-preview token's GSAP tween. Did not verify animation *timing/feel* visually in this session for
+the reason described above; verified tween mechanics (start values, end values, ScrollTrigger
+attachment, reduced-motion branches) via manual ticker advancement instead.
+
+## Round 67 — Waitlist page: removed the sub-nav bar, added a launch countdown
+
+Client, via an annotated screenshot: circled the whole `WaitlistNav` sticky sub-bar and asked to
+remove it (redundant with the site's own Header directly above it), and asked for a countdown to the
+14 September 2026 launch date somewhere on the page.
+
+**Removed:** `WaitlistNav.jsx`/`.css` and its dedicated `useDisclosureNav.js` hook (deleted outright —
+nothing else referenced them), the `waitlistNav` content export, and the now-unused `SECTIONS` export
+from `src/data/waitlist.js`. `Waitlist.jsx` no longer renders a nav and no longer needs the
+`contentRef` that only existed to mark content `inert` while that nav's mobile menu was open. The
+brief's nav links (System / How it works / Waitlist) are gone with it — the hero's own form and the
+final CTA's second form remain the page's two entry points to joining.
+
+**Added:** `LaunchCountdown.jsx`/`.css`, placed in the hero directly under the announcement badge and
+before the H1 (and folded into the hero's existing entrance timeline). Ticks every second via
+`setInterval` computing days/hours/minutes/seconds until `new Date('2026-09-14T00:00:00')` (local
+time, no timezone specified by the client). The ticking digits are `aria-hidden` — a live region
+re-announcing every second would spam screen readers — a plain visible caption ("Launching 14
+September 2026") carries the same information without the per-second noise.
+
+### Verification (round 67)
+`npm run lint` and `npm run build` both clean. Confirmed via a fresh tab at 1440px that the sub-nav is
+gone, the countdown renders under the badge with a sane value (~31 days from today), and
+`document.documentElement.scrollWidth === clientWidth` (no new horizontal overflow).
+
+## Round 68 — Waitlist page: badge removed, System Preview removed, countdown moved to a top strip
+
+Four quick client rounds in one sitting, each via an annotated screenshot or a short instruction:
+
+1. **Removed the "Mumbai Dabbawala 2.0 is coming" badge** from the hero — `wl-badge`/`wl-badge__dot`
+   deleted from `WaitlistHero.jsx` and `.css`, the `badge` field dropped from `waitlistHero` in
+   `data/waitlist.js`, and the entrance timeline's badge step removed (countdown took its old first
+   slot in the sequence at the time; see #3).
+
+2. **Removed the entire System Preview section.** `SystemPreview.jsx`/`.css` deleted, the
+   `waitlistSystem` fictional dispatch data removed from `data/waitlist.js`, and the section-index
+   eyebrows renumbered so Why=01 and Waitlist=02 (System's "02" slot no longer leaves a gap). This also
+   deleted System Preview's "Pause motion" button — but that button was the WCAG 2.2.2 pause mechanism
+   for `RoutePlate`'s perpetual hero token loop too, not just the board's own token. Re-added a small
+   `.wl-plate__pause` button as a sibling of the (aria-hidden) plate SVG in `RoutePlate.jsx`, so the
+   one continuous animation left on the page still has a stop control — a button *inside*
+   `aria-hidden="true"` would have been invisible to assistive tech, so it had to live outside that div,
+   not just be re-parented into it.
+
+3. **Moved the launch countdown out of the hero into its own full-width strip** at the very top of the
+   page (`LaunchCountdown.jsx` restructured from a stacked hero block into a `wl-countdown-bar` row —
+   caption left, digits right — rendered in `Waitlist.jsx` before `WaitlistHero`, in the slot the
+   deleted sub-nav used to occupy). Static, not animated or sticky — matches the site's own
+   `AnnouncementBar` convention (scrolls away with the page, no entrance tween). The hero's entrance
+   timeline no longer has a countdown step since the countdown isn't in the hero anymore.
+
+4. **Removed the 2px accent `border-top` on `.wl-final__grid`** (the full-width red rule that used to
+   sit above "Your lunch, perfected.").
+
+### Verification (round 68 — superseded in parts by round 69)
+`npm run lint` and `npm run build` clean after every step. Confirmed via `get_page_text` that the
+System Preview's manifest/hub/route/lane copy no longer appears anywhere and the Why/Waitlist eyebrows
+read "01"/"02". Confirmed via `getComputedStyle` that `.wl-final__grid`'s `border-top-width` is `0px`.
+Confirmed the relocated countdown renders directly under the global Header, and
+`document.documentElement.scrollWidth === clientWidth` (no new horizontal overflow) at 1440px.
+
+## Round 69 — Waitlist page: detail modal, mascot art, Why section restructured
+
+Several client instructions in one sitting, mostly via annotated screenshots.
+
+**1. "Join the Waitlist" now opens a detail modal.** The inline form used to simulate the whole
+submission from an email alone. It now validates the email only (default / focus / invalid) and hands
+off to a new `WaitlistModal`, which carries the rest of the brief's states (loading / success / error)
+against the full detail set. Fields, per the client: **email** (pre-filled from the inline form,
+editable), **phone number** (Australian — fixed `+61` prefix, validated to 9 digits starting `4`,
+accepting the `412…` / `0412…` / `+61 412…` forms people actually type), **suburb** (explicitly
+*optional*, and validated against a Perth-metro list via `<datalist>` since service opens in Perth
+first), and a **meal preference** control for Veg / Non-veg under the heading "Meal preference".
+
+The preference control is a real `<fieldset>`/`<legend>` **radiogroup** styled as a segmented
+control, not a `tablist` — the client called it a "tab", but a tablist promises tab panels that don't
+exist here, and a preference is a single choice, so radios are the honest semantics (and keep arrow-key
+behaviour for free). The radio inputs are visually hidden but never removed from the a11y tree.
+
+New files: `WaitlistModal.jsx`/`.css`, `src/hooks/useWaitlistDetails.js`. `useWaitlistForm.js` lost its
+simulated-transport half (now just email validation + a `markComplete()` callback).
+
+Modal a11y is hand-rolled to keep the no-new-deps constraint: `role="dialog"` + `aria-modal`, a Tab
+trap bounded by the panel, Escape to close, focus moved to the first empty field on open and returned
+to the submit button on close, body scroll **and** Lenis both stopped while open.
+
+Two real bugs caught during verification:
+- The modal was mounted permanently and only `return null`-ed when closed, so `useWaitlistDetails`
+  seeded its email state from the *initial* (empty) value and the "auto-filled" email came up blank.
+  Fixed by mounting the modal only while open (`{modalOpen && <WaitlistModal …/>}`).
+- On success the modal's own success panel turned out to be **unreachable**: `onComplete` flips the
+  parent `WaitlistForm` to its success panel, which unmounts the dialog in the same commit. Deleted
+  that dead branch rather than leaving it in, and noted why in a comment.
+
+**2. Hero art swapped.** The abstract `RoutePlate` SVG (tiffin + route line + travelling token) was
+replaced with a client-supplied mascot illustration — copied to
+`public/assets/images/dabbawala-mascot.png`, rendered by a new `HeroMascot.jsx`/`.css`. Then enlarged
+on request (`max-width` 320px → 500px, hero aside column 260px → 460px). `RoutePlate.jsx`/`.css` and
+`src/hooks/useLoopRegistry.js` deleted — with the plate gone there are **no perpetual animations left
+on the page at all**, so the WCAG 2.2.2 pause control added in round 68 was removed with them rather
+than left pointing at nothing. The `--wl-steel-500`/`--wl-turmeric` tokens went too (no remaining users).
+
+**3. Why section restructured + reheaded.** Client supplied a dark "BUILT TO DOMINATE." reference and
+asked for its *structure*, explicitly not its colours. Rebuilt as an alternating left/right run of
+statements on hairline rules (odd rows left + ruled, even row right + unruled) in this site's own
+palette and type. Heading changed from "Why Mumbai Dabbawala 2.0" to **"Built for precision."**; the
+old eyebrow text moved up as the section's eyebrow. Row content flattened to one claim + one paragraph
+each, so `LidCodeMark.jsx`/`.css` (the painted-lid figure) is gone and the per-row quote/proof/window
+sub-structures collapsed. Dropped `AnimatedHeading` here — the new heading is a plain uppercase `h2`.
+
+**4. Countdown highlight added, then reverted.** Briefly given the AnnouncementBar's accent-red fill on
+request, then returned to the plain bordered treatment when the client changed their mind. Net effect
+on the repo: unchanged from round 68.
+
+### Verification (round 69)
+`npm run lint` (only the 2 pre-existing `VideoScroll.jsx` warnings) and `npm run build` clean after
+every step. Drove the whole modal flow via `javascript_tool` (native value setter + `dispatchEvent` +
+real `.click()`, since `computer{action:"click"}` still times out in this pane): confirmed the modal
+opens with `role="dialog"`/`aria-modal="true"`, the email arrives pre-filled, focus lands in the phone
+field, body scroll locks, 20 Perth suburbs populate the datalist, and the legend reads "Meal
+preference". Confirmed empty-phone submit shows "Enter a valid Australian mobile number." with
+`aria-invalid` and focus on that field; `0412 345 678` is accepted; a non-Perth suburb ("Sydney CBD")
+is rejected with focus moved to it; a valid submit sets `aria-busy` and announces "Confirming your
+waitlist spot."; and on resolve the dialog closes, the inline form shows "You're on the list.", focus
+moves to that heading and `document.body.style.overflow` is restored. Confirmed Escape closes the
+dialog and returns focus to the submit button. No horizontal overflow at 1440px
+(`scrollWidth === clientWidth`).
+
+## Round 70 — Waitlist page: final CTA statement + second form removed
+
+Client annotated a box around the closing block's eyebrow ("02 WAITLIST"), the "Your lunch,
+perfected." statement and the second waitlist form — deliberately excluding the three figures below
+them — and asked for it removed.
+
+`FinalCta` is now just the stats strip. Removed the `.wl-final__grid` block (eyebrow, masked-line h2,
+`<WaitlistForm variant="cta">`, and the "No spam…" note), and with it the whole GSAP title-reveal
+effect that only existed to animate that heading — so `FinalCta.jsx` no longer imports `gsap`,
+`ScrollTrigger`, `reducedMotion`, `useLayoutEffect`/`useRef` or `WaitlistForm`. `useSectionFx` stays,
+because the stats still animate via `[data-stagger]`. Trimmed `waitlistCta` down to `stats` only
+(`eyebrow`, `titleLines` and `note` had no remaining consumers).
+
+Two consequences handled rather than left dangling:
+- The section carried `aria-labelledby="wl-final-title"`, pointing at the heading being deleted — a
+  dangling ARIA reference is a real defect, not a cosmetic one, so it was replaced with a plain
+  `aria-label="Mumbai Dabbawala by the numbers"`. `tabIndex={-1}` also went (nothing focuses it now
+  that the page has no in-page nav).
+- `.wl-final__stats` had `margin-top: var(--space-9)` + `padding-top` + `border-top`, all of which
+  existed to separate it from the block above. With nothing above it, that left a stray hairline under
+  ~96px of blank space, so the rule and the top margin were dropped.
+
+**The hero form is now the page's only signup entry point.** `WaitlistForm`'s `variant` prop is kept
+(it still distinguishes label visibility and success-heading level) even though only `"hero"` is
+passed today — it is a parameterised component API, and keeping it means re-adding a second form later
+is a one-line change.
+
+### Verification (round 70)
+`npm run lint` and `npm run build` clean. Grepped for every removed hook (`wl-final__grid`,
+`wl-final__title`, `wl-final__note`, `wl-final__say`, `wl-final__act`, `wl-final-title`,
+`waitlistCta.note`, `waitlistCta.eyebrow`) — zero remaining references anywhere in `src/`. Confirmed
+in the browser via `get_page_text` that the statement and eyebrow no longer render and the three
+figures still do; via DOM query that the page now has exactly **1** form and **1** email input (was 2
+of each), that no element still points at the deleted `wl-final-title` id, and that
+`scrollWidth === clientWidth` (no horizontal overflow).
+
+## Round 71 — Waitlist detail modal verified end-to-end + fixed-position width bug
+
+The "Join the Waitlist" detail dialog (email autofilled / AU phone / optional Perth suburb / veg
+toggle) had been built but never verified in a browser. Verified the whole flow this round and fixed
+one real defect found in the process.
+
+### Bug found and fixed: modal sized against the wrong containing block
+At 375px the dialog panel measured **406px wide against a 375px visual viewport**, with its right edge
+off-screen. Root cause is *not* in the modal's own layout: the page still carries the pre-existing
+`.header__cta` horizontal overflow (documented in an earlier round as out-of-scope shared chrome),
+which pushes `document.documentElement.scrollWidth` to 429px. `.wl-modal` is `position: fixed;
+inset: 0`, and `inset: 0` stretches a fixed element to the *initial containing block* — which that
+overflow had widened to 429px. The dialog was therefore sizing and centring against 429px, not 375px.
+
+Fixed defensively inside the modal rather than by touching shared chrome:
+- `.wl-modal` gained `width: 100vw` (with `left` + `width` both set, `right` is ignored, so this
+  overrides the `inset: 0` stretch) — the scrim and centring now use the visible viewport.
+- `.wl-modal__panel` `max-width` became `min(520px, calc(100vw - 2 * var(--space-3)))` so the panel is
+  capped against the visual viewport regardless of any ancestor/document overflow.
+
+After: 375px → panel 351px, left 12 / right 363, centred, fits, no internal overflow. 1440px → panel
+still exactly 520px and centred (desktop unaffected).
+
+**The underlying `.header__cta` overflow is still unfixed** and still affects all 7 routes; the modal
+is now merely immune to it.
+
+### Verification (round 71)
+Browser-driven, not code-reading. Confirmed: modal opens on valid-email submit with the typed address
+**prefilled**; focus moves to the phone field; `role="dialog"` + `aria-modal="true"`; body scroll and
+Lenis both stop. AU phone validation — rejects empty / `123` / `9999999999` / landline `0812345678`,
+accepts `0412345678`, `412345678`, `+61 412 345 678` and spaced forms. Suburb — empty accepted
+(optional), `Sydney`/`Bondi` rejected with the Perth-only message, `fremantle` accepted
+case-insensitively. Preference renders as a real radiogroup with legend **"Meal preference"** and
+Vegetarian/Non-vegetarian, Vegetarian default. Submit sets `aria-busy="true"`; `.test` address routes
+to the `role="alert"` error without closing the dialog; a good address completes to the page's success
+panel ("You're on the list.") with focus moved to the success heading and scroll restored. Escape
+closes and returns focus to the trigger; scrim click closes. Inputs are 16px (no iOS zoom).
+
+Note: an initial validation sweep gave a false "empty phone accepted" reading because it asserted on
+`aria-invalid` synchronously before React had committed the re-render — results were shifted by one
+iteration. Re-run with awaits between cases; phone is correctly required.
+
+## Round 72 — Why section: duplicate list numbering fixed
+
+Client spotted two numbers per row ("1." next to "01"). Regression from the round-68 Why rebuild:
+`global.css` resets `ul { list-style: none; padding: 0 }` but has **no `ol` reset**. The pre-rebuild
+markup happened to hide the native marker as a side effect — each `<li>` was `display: grid`, which
+overrides `display: list-item` and drops the marker box. The rebuilt rows are plain blocks, so the
+native decimal markers (and the default 40px indent) came back alongside the styled index spans.
+
+Fixed on `.wl-why__rows` with `list-style: none; padding: 0`. Deliberately kept as an `<ol>` rather
+than switching to `<ul>`: the ordering is meaningful, and since the visible `01/02/03` spans are
+`aria-hidden`, the list element is what a screen reader actually counts.
+
+### Verification (round 72)
+Confirmed in-browser: `list-style-type: none`, `padding-left: 0px`, exactly three visible indexes
+(01/02/03) all still `aria-hidden`, and no native markers in the rendered section. Build clean.
+
+## Round 73 — Stats strip restyled
+
+Client asked to restyle the closing figures (1890 / 5,000+ / 200,000+), which since round 70 had been
+three plain bold numbers sitting in a large empty white area with no framing.
+
+Restyled as a rounded tinted slab (`section--slab section--tint`, the repo's existing band treatment),
+so the closing block reads as a deliberate band rather than leftover space. Figures moved from
+Palanquin bold to the Asar display face at `clamp(2.5rem, 5vw, 4rem)` with tight tracking, each led by
+a short 40px accent tick that gives the row a measured, instrument-panel rhythm.
+
+`section--slab` is safe here despite its `overflow: hidden` — that only breaks `position: sticky` and
+ScrollTrigger pins, and this block contains neither. Noted inline so the trap isn't re-litigated later.
+
+Responsive: 3 columns down to 900px (tighter gap), single column below 700px with hairline dividers
+between items and the first item's divider suppressed.
+
+### Verification (round 73)
+1440px: slab applied, `#f5f5f5` fill, 72px radius, Asar numerals at 64px, 3 accent ticks present, and
+the `data-stagger` reveal still runs (all three items end at opacity ~1 — confirming the restyle didn't
+strand them at the animation's `opacity: 0` start state). 375px: collapses to one column, dividers
+`[0px, 1px, 1px]` (first correctly suppressed), numerals 40px, section fits the viewport. Lint clean
+(no new warnings), build clean.
+
+## Round 74 — Stats slab spacing
+
+Client: remove the stats slab's top margin, add a bottom one. `.wl-final`'s
+`margin-top: var(--space-9)` became `margin-bottom: var(--space-9)`.
+
+Confirmed: computed `margin-top: 0px`, `margin-bottom: 96px`; gap from the Why section is now 0 and
+gap to the footer is 96px. The slab's own `.section` `padding-block: 90px` is untouched, so the
+figures keep their internal breathing room — only the outer spacing moved.
+
+## Round 75 — Modal: wider, single-line heading, no scrollbar
+
+Three client asks on the detail dialog.
+
+**Width** — `max-width` 520px → 680px (vw cap retained).
+
+**Single-line heading** — `.wl-modal__title` carried `max-width: 18ch`, and "Complete your waitlist
+spot" is 27 characters, so the cap itself was what forced the wrap. Removed it and added
+`padding-right: 44px` so the text clears the absolutely-positioned close button. It still wraps
+naturally below ~560px, where one line genuinely cannot fit.
+
+**No scrollbar** — solved by making the content fit rather than by deleting `overflow-y: auto`.
+Removing the overflow outright would have pushed the submit button off-screen with no way to reach it
+on short/landscape viewports, which is a worse bug than a scrollbar. Height came down via: phone and
+suburb moved into a shared 2-column `.wl-modal__row` (the single biggest saving), field margins
+`--space-5` → `--space-4`, submit margin `--space-6` → `--space-5`. On ≤480px the panel also gets
+tighter padding, a smaller title, a taller `max-height` allowance, and the veg/non-veg segments stay
+side-by-side (they fit at 375px and stacking them cost a full 48px row). `max-height` + `overflow-y`
+stay as the short-viewport safety net.
+
+### Verification (round 75)
+1440x900: panel 680px, title renders on exactly 1 line, `scrollHeight === clientHeight` (601/601) — no
+scrollbar. 375x812: panel 351px and fits, row stacks to 1 column, `scrollHeight === clientHeight`
+(664/664) — no scrollbar, submit button within the viewport, inputs still 16px (no iOS zoom).
+Regression pass on the flow: invalid phone still blocks submit, valid submit still completes to the
+success panel, dialog unmounts and body scroll is restored. Lint and build clean.
+
+## Round 76 — Modal field spacing
+
+Client: add space between the modal's fields — the email input was sitting flush against the PHONE
+NUMBER label.
+
+Root cause was not just the tightened margins from round 75. `.wl-modal__row` (the wrapper added last
+round to put phone and suburb side by side) is **not** a `.wl-modal__field`, so it picked up no
+top spacing at all — the measured gap between the email input and the phone label was literally
+**0px**. Raising `.wl-modal__field`'s margin alone would never have fixed it; the row needed its own
+`margin-top`.
+
+Spacing raised across the form: field margin `--space-4` → `--space-6`, row `margin-top: --space-6`
+(new), row column gap `--space-4` → `--space-5`, label `margin-bottom` `--space-2` → `--space-3`,
+submit `margin-top` `--space-5` → `--space-7`. On ≤480px the same rhythm is scaled back one step
+(fields/row `--space-5`, submit `--space-6`) because there is far less vertical headroom on a phone
+and the form still has to clear the viewport unscrolled.
+
+### Verification (round 76)
+1440x900: email→phone-label 32px, phone-hint→meal-legend 35px, pref-hint→submit 48px;
+`scrollHeight === clientHeight` (701/701) — still no scrollbar. 375x812: email→phone-label 24px,
+`scrollHeight === clientHeight` (744/744), submit still within the viewport. Build clean.
+
+## Round 77 — Standalone shareable build of the waitlist page
+
+Client wanted a separate folder with the waitlist page plus its CSS and JS, to send to someone.
+
+Delivered `/Users/apple/Downloads/waitlist-standalone/` — a **vanilla HTML/CSS/JS port**, not a Vite
+build. Reason: a zipped `dist/` would not have worked from `file://` at all. Three blockers made that
+route a dead end — `vite.config.js` sets no `base`, so built asset paths are absolute (`/assets/...`);
+every image in the app is referenced as an absolute public path; and `BrowserRouter` needs a server.
+A hand-ported static folder sidesteps all three and is also readable/editable by the recipient, which
+a hashed bundle is not.
+
+Port notes:
+- GSAP and Lenis dropped entirely. Hero entrance is CSS keyframes with a per-element `--d` delay;
+  scroll reveals are an IntersectionObserver adding `.is-in`. No dependencies, works offline.
+  The no-observer / reduced-motion branch adds `.is-in` to everything immediately, so content can
+  never be stranded invisible.
+- The site Header/Footer were deliberately **not** ported — they link to seven routes that do not
+  exist here. Replaced with a logo-only masthead and a minimal footer, so there is not a single dead
+  link in the folder. Side effect: the pre-existing `.header__cta` overflow is absent, and this build
+  measures **0px horizontal overflow at 375px** where the React page still measures 429px.
+- Full behaviour preserved: countdown, email validation, detail dialog (prefilled email, AU phone,
+  Perth-only suburb via `<datalist>`, veg/non-veg radiogroup), loading/success/error, focus trap,
+  Escape, focus return, scroll lock, `.test` failure path.
+
+### Verification (round 77)
+Served over HTTP (the preview pane renders `file://` as a static snapshot, so JS cannot be exercised
+there). Confirmed: countdown ticking; empty and malformed email blocked with correct messages; valid
+email opens the dialog with the address prefilled, focus on phone, scroll locked, 20 suburb options
+injected. Phone — empty/`123`/`9999999999`/landline `0812345678` rejected, `0412345678` and
+`+61 412 345 678` accepted. Suburb — `Sydney`/`Bondi` rejected, `Perth CBD` accepted. Submit sets
+`aria-busy` and swaps the label to "Confirming…"; `.test` address surfaces the transport error without
+closing the dialog; a good address closes it and reveals the success panel with focus moved to its
+heading and scroll restored. Escape closes and returns focus to the trigger. 375px: 0px page overflow,
+dialog 351px and fits, no internal scrollbar, submit in view.
+
+Two earlier readings in this round were test artifacts, not bugs — a suburb sweep that ran after a
+successful submit (blocked by the double-submit guard) and a focus-return check driven by
+`requestSubmit()` (so `activeElement` was `<body>`, never the trigger). Both re-run correctly against
+a real click.
+
+Temporarily added a `waitlist-standalone` entry to `.claude/launch.json` to serve the folder for
+testing; reverted afterwards, so the project's launch config is unchanged.
+
+## Round 78 — Process cards: capsule → arch
+
+Client annotated the "How it works" step cards and asked for a different shape. These were full
+capsules (`border-radius: 200px` top and bottom, after Spice Box).
+
+Changed to an **arch** — `border-radius: 999px 999px var(--radius-md) var(--radius-md)`, so the top is
+a dome and the foot is squared — plus a `1px` hairline border for definition now that the silhouette
+no longer carries the card on its own. Deliberately not a plain rounded rectangle: the original CSS
+comment noted the shape *is* the treatment here, and a modest radius would collapse these back into
+the ordinary four-column grid they were designed to replace. The arch also reads as a tiffin lid,
+which the symmetrical capsule did not.
+
+Mobile (≤600px), where one-column cards are wide and short and a full dome would look extreme, uses
+`--space-9` on the top corners instead of `999px`.
+
+### Verification (round 78)
+Computed `border-radius: 999px 999px 12px 12px` and the 1px border confirmed on all 4 cards.
+
+Visual check needed a workaround: the homepage keeps snapping `scrollY` back to 0 in the preview pane
+(Lenis + the pane's rAF throttling — the limitation already recorded for this project), so the section
+could not be screenshotted in place; pinning the scroll with an interval produced blank frames too.
+Cloned `#process` into a fixed full-viewport overlay at scroll 0 instead, screenshotted that, then
+removed the probe. Arch shape confirmed rendering correctly across all four cards. Build clean.
+
+## Round 79 — About: Milestones timeline → masonry card grid
+
+Client asked for the About page's Milestones section to become a masonry grid card section.
+
+`AboutTimeline` was a scroll-pinned timeline: a `position: sticky` scroller ~5 viewport-heights tall
+that revealed one milestone at a time, driven by a scroll listener, with an `OptionWheel` year picker
+beside it. Replaced with a CSS multi-column masonry of five cards — every milestone is visible and
+scannable at once, and the About page loses roughly 4,000px of artificial scroll height.
+
+Implementation notes:
+- Masonry is `columns: 3` (2 at ≤1000px, 1 at ≤700px) with `break-inside: avoid`, not a JS-measured
+  grid — no layout pass of our own, degrades cleanly.
+- **The photos are all roughly landscape**, so with intrinsic ratios the cards landed within ~23px of
+  each other and the result read as a plain 3-column grid, not masonry. Varying the image frame's
+  `aspect-ratio` per card (4/3, 1/1, 16/10, 4/5, 3/2) is what actually produces the stagger — height
+  spread went from 23px to 187px.
+- All the sticky/`vh`-measuring machinery is gone, including the `window.innerHeight < 100` guard and
+  the resize-driven height state that existed only to keep the pin honest on mobile.
+- `section--slab` added back. It was previously excluded because its `overflow: hidden` breaks
+  `position: sticky` for descendants; with the pin gone that constraint no longer applies.
+- Hit the **same `ol` marker bug as round 72** — `global.css` resets `ul` but not `ol`, so native
+  "1. 2. 3." markers rendered beside the cards. Fixed with `list-style: none; padding: 0` on the list.
+  Kept as an `<ol>` since milestones are genuinely ordered.
+
+Known trade-off, deliberately accepted: CSS columns fill **top-to-bottom**, so the visual sequence
+runs down each column, not across the row (top row reads 1890 / 1998 / Today). That is inherent to
+column-based masonry; row-major order would need a JS-measured grid. Mitigated by making the year the
+loudest element on every card, so chronology is read from the label rather than inferred from
+position. DOM order stays chronological, so screen-reader and keyboard order are unaffected, and at
+one column the order is fully sequential anyway.
+
+`OptionWheel.jsx` / `.css` now have no consumer. **Not deleted** — `src/components/about/` is
+untracked in git, so removing them would be unrecoverable. Flagged to the client instead.
+
+### Verification (round 79)
+1440px: 5 cards, `column-count: 3`, `break-inside: avoid`, all five years present, sticky scroller and
+option wheel both gone from the DOM, `list-style: none` / `padding-left: 0px` confirmed. Card height
+spread 187px (436/511/421/608/434) — genuine masonry stagger. 375px: collapses to 1 column, zero cards
+overflowing the viewport, DOM order chronological. The residual 54px document overflow at 375px is the
+pre-existing `.header__cta` bug, not this section. Lint and build clean.
+
+Screenshots again required the clone-into-a-fixed-overlay probe — the About page also runs Lenis, and
+the pane will not hold a deep scroll position.
+
+## Round 80 — OptionWheel removed; Milestones masonry → bento
+
+Two client asks in sequence.
+
+**1. `OptionWheel` deleted.** Its only consumer was the pinned timeline replaced in round 79. Verified
+zero remaining references, then removed `OptionWheel.jsx` (323 lines) and `.css` (52). Because
+`src/components/about/` is untracked in git, a copy was written to the session scratchpad first —
+deletion would otherwise have been unrecoverable.
+
+**2. Milestones changed from multi-column masonry to a bento grid.** This also fixes the ordering
+trade-off flagged in round 79: CSS columns fill top-to-bottom, so the masonry read 1890 / 1998 / Today
+across its first row. A grid fills row-major, so the bento reads 1890 → 1930s → 1998 → 2005 → Today
+left-to-right, matching DOM order exactly. Verified programmatically by sorting tiles by (top, left)
+and comparing to DOM order — `chronological: true` at 1440, 1024 and 375.
+
+Composition (4 columns, following `Framework.css`'s explicit `grid-column` / `grid-row` convention):
+1890 is a 2x2 feature tile, 1930s a 2x1 wide tile beside it, 1998 and 2005 the two small squares
+beneath, and Today a full-width 4x1 closing tile laid out horizontally (image left, copy right).
+Card markup gained a `__body` wrapper so that horizontal tile can split image from copy.
+
+Two layout defects found and fixed during the build:
+- **`grid-auto-rows: auto` produced a 1377px feature tile.** The image frames are `flex: 1` with no
+  intrinsic cap, so auto rows sized themselves to the photos' full intrinsic height. Fixed rows
+  (290px desktop) make the tile proportions a deliberate composition instead of a by-product of image
+  dimensions.
+- **Two tiles overflowed at the 2-column breakpoint** (1890 by 11px, Today by 34px) once every tile
+  dropped to a single row in a narrower column. Fixed with a taller row there (340px) plus a 3-line
+  clamp on the copy.
+
+### Verification (round 80)
+1440px: tiles 560x596 / 560x290 / 272x290 / 272x290 / 1136x290, reading order chronological, zero
+clipped tiles, zero document overflow. 885px (2-col): chronological, zero clipped after the fix.
+375px: single column, chronological, nothing clipped, no horizontal overflow, clamps released so the
+full copy shows. About page renders with 5 milestone cards and no console errors after the
+OptionWheel deletion. Lint and build clean.
+
+## Round 81 — Milestones heading: single line
+
+Client asked for "How the network grew" (the Milestones section heading) to render on one line. It
+was wrapping to 2 lines because `.about-timeline__head` carried `max-width: 46ch`, inherited from
+before the round-79/80 rework — the head no longer needs to constrain prose width now that no
+paragraph sits under the heading. Changed to `max-width: 100%`.
+
+### Verification (round 81)
+1440px: 1 line, width 1136px, single `.split-line`, zero document overflow. 1024px: still 1 line — the
+heading's `clamp()` font-size shrinks with viewport, so it holds at tablet width too. 375px: wraps to 2
+lines, which was left as-is deliberately — every other section title on this site wraps on mobile at
+this same font floor, and forcing single-line there would need an illegibly small size. The 54px
+document overflow measured at 375px is the pre-existing, unrelated `.header__cta` bug. Build clean.
+
+## Round 82 — Standalone waitlist page: premium/engaging pass
+
+Client feedback on `/Users/apple/Downloads/waitlist-standalone/` (the dependency-free export of the
+`/waitlist` route): *"It should feel premium and engaging"*, plus four asks — launch date, creative
+message, contact numbers/email IDs, and anything else worth adding at this stage.
+
+Audit found the page structurally sound but under-communicating: contact details absent entirely,
+the launch date a 12px caption inside a utility strip, "Perth" reachable only via the footer tagline
+and the modal's suburb hint, and a demo-only hint (*"submit any address ending in .test"*) still
+shipping. The banner's whole left third — verified by reading the asset — is empty flat cream, so
+~550px of prime space below the countdown carried nothing.
+
+### Countdown → centrepiece
+The strip read as a widget for three structural reasons: four bordered white cards over a photo; the
+timer placed *above* the logo, outranking the brand; and `.hero-banner__content` sitting
+`position: relative` in flow, so it filled only the top ~200px of a ~756px box.
+
+Rebuilt as a stage: image, veil and content grid-stacked into one cell (not absolute), banner
+`min-height: clamp(560px, 82vh, 800px)`, content flexed `space-between` — masthead top, launch block
+in the empty cream column, scroll cue bottom. Hierarchy is now eyebrow ("Perth, Western Australia")
+→ creative message ("1890, Mumbai. 2026, Perth.") → **the date as display type** → accent rule →
+countdown as a *subordinate* hairline-divided row, no cards or fills.
+
+A **light** veil, never a dark scrim — the photo is a pale cream composite, so darkening it would
+destroy the asset. Ink on it measures 10.2:1; accent is 3.43:1 up there and is therefore restricted
+to the dot, rule and full stop. The veil also covers a faint ghost-text artifact left in the source
+composite around x=36%.
+
+Digits roll through the same mask mechanic the hero headline already uses (`overflow: hidden` over
+two stacked spans) rather than a flip-card. `tickCountdown` now routes through `setUnit()`, which
+no-ops when the value is unchanged — the old code rewrote all four nodes 60x a minute.
+
+### Also
+- **Contact section** (email / two Mumbai numbers / "Where we launch"), plain surface rather than a
+  second tinted slab. The third column converts the location gap into content *and* explains why an
+  Indian number sits on an Australian launch page.
+- **"What happens next"** three steps, reused as the `#hero-done` success copy.
+- Demo hint replaced; `.hero__lead` now says "across Perth"; OG/Twitter/theme-color metadata added
+  (the page previously shared as a bare URL); `fetchpriority`/`loading`/`decoding` hints.
+- Motion: `--rd` stagger extending the existing `--d` convention, scroll-driven banner parallax
+  behind `@supports` + `no-preference`, count-up on the two quantity stats, underline-grow contact
+  links, pointer-tracked wash, grain on the tinted slab, button sheen replacing the `translateY` lift.
+- Three latent bugs fixed in passing: `LAUNCH_DATE` parsed without a timezone (now `+08:00` AWST, so
+  a Mumbai visitor no longer sees a countdown disagreeing with the printed date); `scrollbar-gutter:
+  stable` for the ~15px page jump on modal open; a `window.load` sweep for `.reveal` elements the
+  `-12%` rootMargin can never reach.
+
+### Bugs found during verification (round 82)
+- **The parallax `transform` promoted the banner image above the logo.** A transformed element paints
+  in the positioned-descendant layer, so `.hero-banner__img` covered `.masthead__logo` — which has no
+  transform of its own. The launch block survived only because its `.anim` transform promoted it too.
+  Confirmed via `elementFromPoint` at the logo's centre returning `hero-banner__img`, and fixed by
+  giving the three stacked layers explicit z-index (grid items accept z-index without `position`).
+- **`.section-heading` reused `.why__heading`'s `--display-1`**, the hero size, making two supporting
+  sections shout as loudly as the page's one big statement and pushing "Questions before launch."
+  onto two lines. Given its own `clamp(1.75rem, 3.2vw, 2.75rem)`.
+- **The count-up stranded a wrong number.** `requestAnimationFrame` halts in a throttled or
+  backgrounded tab, leaving a partial figure — observed live at `508+` and `20,313+` instead of
+  `5,000+` and `200,000+`. A wrong number is far worse than no animation, so `countUp` now restores
+  the authored string via an idempotent `finish()` guaranteed by a `setTimeout`, which still fires
+  when rAF does not.
+
+### Verification (round 82)
+Modal smoke-tested end to end after the countdown restructure (the flagged risk: `script.js` is one
+IIFE with no error handling and the countdown runs first, so a missing `#cd-days` would silently kill
+the modal and its focus trap) — opens, prefills, focuses phone, locks scroll, rejects an invalid AU
+mobile and a non-Perth suburb, 20 datalist options, busy state, success block, focus lands on the
+done title, scroll unlocked. Escape closes and returns focus. Digit mask clip confirmed by geometry
+*and* hit-testing mid-transition (`hitAbove`/`hitBelow` return non-digit elements). Zero horizontal
+overflow at 1440 / 1024 / 700 / 375. Count-up settles on `1890 | 5,000+ | 200,000+` with the year
+untouched. Fallback fonts: Asar 409px → Georgia 418px, both inside the 523px block, date stays on one
+line. Console clean. Reduced-motion contract audited statically: only `.anim` and `.reveal` start at
+`opacity: 0` and both are in the rescue list, and both new animations are individually wrapped in
+`prefers-reduced-motion: no-preference` (the global block zeroes `animation-duration`, which is
+meaningless against a `view()` timeline).
+
+Not done, flagged to the client and declined for now: attributing "99.9993%" to Mumbai rather than
+the unlaunched Perth service, captioning the `1890 / 5,000+ / 200,000+` figures as Mumbai's, and
+verifying the Vile Parle carrier quote. Also flagged: every image on the page is Mumbai, and the
+favicon points at a 634x171 wordmark that renders as a smear in the tab.
+
+## Round 83 — Standalone waitlist: AU support email
+
+Client supplied the launch email: `info@mumbaidabbawala.in` → `support@mumbaidabbawala.com.au` in all
+three places on the standalone page (contact section, footer row, `#hero-done` success block). The
+`.com.au` domain also lines the page up with its Perth launch, where the `.in` address read as a
+mismatch.
+
+The new address is 30 characters against the old 23, which broke the contact column: at 1440px it
+cleared its card by only 12px, and just above the 2-column breakpoint (~1025px, columns ~271px) a
+fixed `--fs-xl` would have wrapped it mid-word to "support@mumbaidabbawal / a.com.au". Changed
+`.contact__value` to `font-size: clamp(1rem, 1.5vw, 1.375rem)` so it scales with the column;
+`overflow-wrap: anywhere` stays as the backstop.
+
+### Verification (round 83)
+1440px: 21.4px type, 326px ink in a 347px card, 1 line. 1025px (narrowest 3-column case): 16px type,
+244px ink in a 271px column, 1 line. 375px: 16px, 244px ink in 335px, 1 line; footer row wraps to 2
+lines as expected. Zero horizontal overflow at every width.
+
+Note: the main React site still uses `info@mumbaidabbawala.in` (`src/data/content.js:9`), which the
+shared Footer, Contact section and two FAQ answers all read from. Left unchanged — only the
+standalone page was in scope.
+
+## Round 84 — Site-wide AU support email
+
+Extended round 83's email change from the standalone page to the whole React site. One line:
+`src/data/content.js:9`, `site.email` → `support@mumbaidabbawala.com.au`. Everything reads from that
+single source — `Footer.jsx:52`, `Contact.jsx:56`, and the interpolated FAQ booking answer at
+`content.js:224` — so no other file needed touching.
+
+Phone numbers, addresses and the Roti Bank helpline were left as-is; only the email was in scope.
+
+### Verification (round 84)
+Zero occurrences of `mumbaidabbawala.in` remain in `src/`, `public/` or `index.html`. Every route
+renders the new address: `/` and `/contact` two mailto links each (Contact section + shared Footer),
+`/about` and `/waitlist` one each. FAQ answer read from the DOM rather than innerText, since the
+answers sit in collapsed panels — reads "Call or write in — +91 9870419916 or
+support@mumbaidabbawala.com.au". Five occurrences in the homepage DOM, zero old. Console clean,
+production build clean in 545ms.
