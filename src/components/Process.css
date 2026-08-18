@@ -29,15 +29,18 @@
   margin-top: var(--space-8);
 }
 
-/* Capsule cards, after Spice Box. This is the one place on the site that keeps
-   card chrome: the shape is the whole point of the treatment, and a boxless
-   version would collapse straight back into the four-column grid it replaces. */
+/* Arch cards — domed top, squared foot. This is the one place on the site that
+   keeps card chrome: the shape is the whole point of the treatment, and a
+   plain rounded rectangle would collapse straight back into the four-column
+   grid it replaces. The arch also reads as a tiffin lid, which the previous
+   full capsule did not. */
 .process__step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-8) var(--space-6);
-  border-radius: 200px;
+  padding: var(--space-8) var(--space-6) var(--space-7);
+  border: 1px solid var(--color-border-muted);
+  border-radius: 999px 999px var(--radius-md) var(--radius-md);
   background: var(--color-surface-elevated);
 }
 
@@ -83,10 +86,10 @@
     grid-template-columns: 1fr;
   }
 
-  /* A capsule needs height to look like one; at one column the cards are wide
-     and short, so the radius comes down to a large rounded rectangle. */
+  /* An arch needs height to read as one; at one column the cards are wide and
+     short, so the dome comes down to a large rounded top instead. */
   .process__step {
     padding: var(--space-7) var(--space-6);
-    border-radius: var(--space-8);
+    border-radius: var(--space-9) var(--space-9) var(--radius-md) var(--radius-md);
   }
 }

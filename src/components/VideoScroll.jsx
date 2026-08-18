@@ -127,7 +127,19 @@ export default function VideoScroll() {
         start: 'top top',
         // Longer than a playback-only pin would need, so the expand phase gets
         // its own room instead of eating into scrub time for the 120 frames.
-        end: '+=350%',
+        // A fixed viewport multiple, not a percentage — `root` is also the
+        // pin's own container, so its rendered height *is* the spacer height
+        // once pinned. A percentage `end` re-measures against that height on
+        // every refresh (route changes call `ScrollTrigger.refresh()` in
+        // Layout.jsx), and each refresh's 350% is 350% of the *previous*
+        // refresh's already-inflated height — compounding ~3.5x per refresh
+        // until the section reached over 89,000px tall in one test session.
+        // `window.innerHeight` is stable across refreshes, so this can't feed
+        // back into itself the same way.
+        // Guarded against a 0/implausible reading (the tab can report that
+        // before it's properly laid out or visible) rather than baking a
+        // near-zero scroll distance into the trigger.
+        end: () => `+=${Math.max(window.innerHeight, 600) * 3.5}`,
         pin: '.video-scroll__stage',
         anticipatePin: 1,
         // This pin inserts ~3150px of spacer, shifting every section below it

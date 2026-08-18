@@ -1,0 +1,76 @@
+.chef-spotlight__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.chef-spotlight__image-frame {
+  overflow: hidden;
+  height: clamp(320px, 40vw, 520px);
+  border-radius: var(--radius-md);
+}
+
+.chef-spotlight__image-scale {
+  width: 100%;
+  height: 100%;
+  transition: transform var(--motion-duration-slow) var(--motion-ease);
+}
+
+.chef-spotlight__image-frame:hover .chef-spotlight__image-scale {
+  transform: scale(1.06);
+}
+
+.chef-spotlight__image {
+  display: block;
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+}
+
+.chef-spotlight__paragraphs {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.chef-spotlight__quote {
+  margin-top: var(--space-7);
+  padding-inline-start: var(--space-5);
+  border-inline-start: 3px solid var(--color-text-accent);
+}
+
+.chef-spotlight__quote p {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-style: italic;
+  line-height: var(--line-height-snug);
+}
+
+.chef-spotlight__quote footer {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-4);
+}
+
+.chef-spotlight__quote-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.chef-spotlight__quote-role {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 900px) {
+  .chef-spotlight__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chef-spotlight__image-frame {
+    height: clamp(220px, 60vw, 360px);
+  }
+}

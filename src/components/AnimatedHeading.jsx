@@ -17,10 +17,10 @@ export default function AnimatedHeading({ as: Tag = 'h2', text, className = '', 
     let split;
     let ctx;
     let cancelled = false;
+    let lastWidth = 0;
 
-    // SplitText measures line breaks, so it has to wait for the real font.
-    document.fonts.ready.then(() => {
-      if (cancelled || !ref.current) return;
+    const createSplit = () => {
+      lastWidth = el.getBoundingClientRect().width;
 
       ctx = gsap.context(() => {
         split = SplitText.create(el, {
@@ -38,12 +38,33 @@ export default function AnimatedHeading({ as: Tag = 'h2', text, className = '', 
           scrollTrigger: { trigger: el, start: 'top 88%', once: true },
         });
       }, el);
+    };
 
+    // SplitText measures line breaks, so it has to wait for the real font.
+    document.fonts.ready.then(() => {
+      if (cancelled || !ref.current) return;
+      createSplit();
       ScrollTrigger.refresh();
     });
 
+    // Frozen line breaks from a mid-layout measurement (e.g. a heading that
+    // mounts before its own container has settled to full width) otherwise
+    // stick forever — SplitText only runs once, on `[text]`. Re-splitting on
+    // any real width change is the general fix, not just a one-off patch for
+    // whichever heading hits it first.
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!split || cancelled) return;
+      const width = entry.contentRect.width;
+      if (Math.abs(width - lastWidth) < 1) return;
+      ctx.revert();
+      split.revert();
+      createSplit();
+    });
+    resizeObserver.observe(el);
+
     return () => {
       cancelled = true;
+      resizeObserver.disconnect();
       ctx?.revert();
       split?.revert();
     };

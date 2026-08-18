@@ -1,0 +1,203 @@
+.blog-grid__featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.blog-grid__featured-image-frame {
+  overflow: hidden;
+  height: clamp(260px, 32vw, 420px);
+  border-radius: var(--radius-md);
+}
+
+.blog-grid__featured-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--motion-duration-slow) var(--motion-ease);
+}
+
+.blog-grid__featured:hover .blog-grid__featured-image-frame img {
+  transform: scale(1.05);
+}
+
+.blog-grid__meta {
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+.blog-grid__featured-title {
+  margin-top: var(--space-4);
+  font-family: var(--font-family-display);
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  transition: color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.blog-grid__featured:hover .blog-grid__featured-title {
+  color: var(--color-text-accent);
+}
+
+.blog-grid__excerpt {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.blog-grid__read-more {
+  display: inline-block;
+  margin-top: var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-accent);
+}
+
+/* Filter/sort bar, after litmus.com/blog's own horizontal bar below its
+   hero — functional category filtering, not just decorative pills. */
+.blog-grid__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.blog-grid__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.blog-grid__filter {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  transition: border-color var(--motion-duration-instant) var(--motion-ease),
+    color var(--motion-duration-instant) var(--motion-ease),
+    background-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.blog-grid__filter:hover {
+  border-color: var(--color-text-accent);
+  color: var(--color-text-accent);
+}
+
+.blog-grid__filter.is-active {
+  border-color: var(--color-text-accent);
+  background: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+}
+
+.blog-grid__sort {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.blog-grid__sort-btn {
+  color: var(--color-text-muted);
+  transition: color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.blog-grid__sort-btn:hover {
+  color: var(--color-text-accent);
+}
+
+.blog-grid__sort-btn.is-active {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* Chronological row list — no card borders/shadows, a hairline rule between
+   rows instead, closer to litmus.com/blog's plain feed than a card grid. */
+.blog-grid__list {
+  margin-top: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.blog-grid__row {
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.blog-grid__row-link {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+  padding-block: var(--space-6);
+}
+
+.blog-grid__row-image-frame {
+  overflow: hidden;
+  height: 110px;
+  border-radius: var(--radius-sm);
+}
+
+.blog-grid__row-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--motion-duration-slow) var(--motion-ease);
+}
+
+.blog-grid__row-link:hover .blog-grid__row-image-frame img {
+  transform: scale(1.08);
+}
+
+.blog-grid__row-body {
+  min-width: 0;
+}
+
+.blog-grid__row-title {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  transition: color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.blog-grid__row-link:hover .blog-grid__row-title {
+  color: var(--color-text-accent);
+}
+
+.blog-grid__row-body .blog-grid__excerpt {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.blog-grid__empty {
+  padding-block: var(--space-8);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 900px) {
+  .blog-grid__featured {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-grid__row-link {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .blog-grid__row-image-frame {
+    height: 72px;
+  }
+}

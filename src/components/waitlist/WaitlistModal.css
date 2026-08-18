@@ -1,0 +1,293 @@
+.wl-modal {
+  position: fixed;
+  inset: 0;
+  /* inset:0 alone stretches this to the initial containing block, which the
+     page's pre-existing header overflow widens past the visible viewport —
+     that would centre the dialog against the wrong box. Pinning the width to
+     100vw keeps it centred on what the user can actually see. (left+width win
+     over right when all three are set, so this overrides the inset stretch.) */
+  width: 100vw;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+
+.wl-modal__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 29, 28, 0.5);
+}
+
+.wl-modal__panel {
+  position: relative;
+  width: 100%;
+  /* Capped against the visual viewport (vw), not just the parent: this page
+     still has a pre-existing horizontal overflow from the shared header's CTA
+     at narrow widths, which widens the initial containing block that a
+     position:fixed ancestor stretches to. Without the vw cap the panel
+     inherits that inflated width and its right edge sits off-screen. */
+  max-width: min(680px, calc(100vw - 2 * var(--space-3)));
+  /* The layout below is tuned so the form fits without scrolling at normal
+     viewport heights. This cap stays as a safety net for genuinely short
+     viewports (landscape phones): without it the submit button would sit
+     off-screen with no way to reach it, which is worse than a scrollbar. */
+  max-height: calc(100vh - var(--space-8));
+  overflow-y: auto;
+  padding: var(--space-7);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.wl-modal__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.wl-modal__close:hover {
+  color: var(--color-text-primary);
+}
+
+/* No max-width: the 18ch cap here was what forced "Complete your waitlist
+   spot" onto two lines. padding-right keeps it clear of the close button; it
+   still wraps naturally on narrow screens, where one line will not fit. */
+.wl-modal__title {
+  padding-right: 44px;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-base);
+  font-size: var(--font-size-2xl);
+  line-height: 1.15;
+}
+
+.wl-modal__intro {
+  margin-top: var(--space-3);
+  max-width: 46ch;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.wl-modal__field {
+  margin-top: var(--space-6);
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+/* Phone and suburb share a row on the wider panel — the single biggest height
+   saving, and what lets the form clear the viewport without scrolling. */
+/* Needs its own margin-top: this wrapper is not a .wl-modal__field, so it was
+   inheriting no top spacing at all and the email input sat flush against the
+   phone label. */
+.wl-modal__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+  margin-top: var(--space-6);
+}
+
+.wl-modal__row .wl-modal__field {
+  margin-top: 0;
+}
+
+@media (max-width: 560px) {
+  .wl-modal__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+.wl-modal__field > label,
+.wl-modal__prefs legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.wl-modal__optional {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+/* 16px floor — anything smaller triggers iOS Safari's focus zoom, which it
+   never undoes on blur. */
+.wl-modal__field input {
+  width: 100%;
+  height: 48px;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-xs);
+  background: var(--color-field-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  transition: border-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.wl-modal__field input:focus-visible {
+  border-color: var(--color-text-accent);
+}
+
+.wl-modal__field input[aria-invalid='true'] {
+  border-color: var(--color-danger-border);
+}
+
+.wl-modal__phone {
+  display: flex;
+  align-items: stretch;
+}
+
+.wl-modal__prefix {
+  display: grid;
+  place-items: center;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-hover);
+  border-right: none;
+  border-radius: var(--radius-xs) 0 0 var(--radius-xs);
+  background: var(--color-surface-base);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+
+.wl-modal__phone input {
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+
+.wl-modal__segmented {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.wl-modal__seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--motion-duration-instant) var(--motion-ease),
+    background-color var(--motion-duration-instant) var(--motion-ease),
+    color var(--motion-duration-instant) var(--motion-ease);
+}
+
+/* The radio itself stays in the a11y tree and keeps keyboard arrow-key
+   behaviour — it's only visually replaced by the segment, never removed. */
+.wl-modal__seg input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.wl-modal__seg.is-active {
+  background: var(--color-text-accent);
+  border-color: var(--color-text-accent);
+  color: var(--color-text-on-accent);
+  font-weight: var(--font-weight-medium);
+}
+
+.wl-modal__seg:has(input:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+.wl-modal__error {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+.wl-modal__hint {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.wl-modal__submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--space-7);
+  min-height: 48px;
+}
+
+.wl-modal__submit[aria-disabled='true'] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.wl-modal__alert {
+  margin-top: var(--space-3);
+  min-height: 1.2em;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+.wl-modal__receipt {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 480px) {
+  .wl-modal {
+    padding: var(--space-2);
+  }
+
+  /* Tighter padding + more of the viewport allowed, so the form still clears
+     a 375x812 screen without scrolling. */
+  .wl-modal__panel {
+    max-height: calc(100vh - var(--space-4));
+    padding: var(--space-5);
+  }
+
+  .wl-modal__title {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Desktop's roomier rhythm scaled back a step here — there is far less
+     vertical headroom on a phone, and the whole form still has to clear the
+     viewport without scrolling. */
+  .wl-modal__field,
+  .wl-modal__row {
+    margin-top: var(--space-5);
+  }
+
+  .wl-modal__submit {
+    margin-top: var(--space-6);
+  }
+
+  /* Two segments side by side fit fine at this width and save a whole 48px
+     row versus stacking them. */
+  .wl-modal__segmented {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

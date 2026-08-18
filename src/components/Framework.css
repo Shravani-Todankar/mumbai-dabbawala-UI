@@ -1,105 +1,199 @@
-.framework__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: var(--space-8);
-  align-items: start;
-}
-
 .framework__head {
-  position: sticky;
-  top: 140px;
+  max-width: 60ch;
 }
 
 /* "Transformational" is a single unbreakable word; at the shared display size
-   its glyphs overflow this column and collide with the list beside it. */
+   its glyphs can overflow a narrow column. */
 .framework__head .section-title {
   font-size: clamp(2rem, 3.4vw, 3rem);
 }
 
-.framework__list {
+/* Three-column bento: a big tile left, two small tiles stacked in the middle
+   column, a big tile right — the four framework steps map onto it 1:1. Fixed
+   equal-height rows so the middle stack's combined height matches the two
+   side tiles exactly. */
+.framework__bento {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 230px);
+  gap: var(--space-5);
+  margin-top: var(--space-8);
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--color-border-muted);
 }
 
-@media (max-width: 900px) {
-  .framework__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .framework__head {
-    position: static;
-  }
+.framework__tile--1 {
+  grid-column: 1;
+  grid-row: 1 / span 2;
 }
 
-.framework__row {
+.framework__tile--2 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.framework__tile--3 {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.framework__tile--4 {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+/* Registered so the angle is animatable — an unregistered custom property
+   can't be interpolated, and the ring would just snap between two rotations
+   instead of spinning. */
+@property --framework-tile-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Rotating conic-gradient border, via the two-background-layer trick
+   (padding-box fill + border-box gradient) rather than mask-composite —
+   this project hit an actual mask-composite/-webkit-mask-composite
+   conflict in testing where the "ring" rendered as an unmasked diagonal
+   wash instead of an outline, so this is the reliable version. */
+.framework__tile {
   position: relative;
-  display: grid;
-  grid-template-columns: 72px 1fr auto;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-5);
-  padding-block: var(--space-6);
-  border-bottom: 1px solid var(--color-border-muted);
-  transition: padding-inline var(--motion-duration-fast) var(--motion-ease);
+  justify-content: center;
+  gap: var(--space-4);
+  overflow: hidden;
+  isolation: isolate;
+  padding: var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: linear-gradient(var(--color-surface-elevated), var(--color-surface-elevated)) padding-box,
+    conic-gradient(from var(--framework-tile-angle), var(--color-text-accent), var(--color-text-primary), var(--color-text-muted), var(--color-text-accent)) border-box;
+  text-align: center;
+  animation: framework-tile-spin 4s linear infinite;
+  transition: transform var(--motion-duration-fast) var(--motion-ease);
 }
 
-.framework__row::before {
-  content: '';
+.framework__tile:hover {
+  transform: scale(1.015);
+}
+
+@keyframes framework-tile-spin {
+  to { --framework-tile-angle: 360deg; }
+}
+
+/* Pixel-shimmer hover layer (see PixelCanvas.jsx / PressStrip.css for the
+   same pattern) — negative z-index needs the tile's own `isolation: isolate`
+   above to stay contained instead of escaping behind the whole page. */
+.framework__tile .pixel-canvas {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--color-accent-tint-soft), transparent);
-  opacity: 0;
-  transition: opacity var(--motion-duration-fast) var(--motion-ease);
+  z-index: -1;
   pointer-events: none;
 }
 
-.framework__row:hover {
-  padding-inline: var(--space-5);
+.framework__tile .pixel-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.framework__row:hover::before {
-  opacity: 1;
+/* Stands in for a per-tile GIF (see FrameworkVisual.jsx): a small looping SVG
+   or illustration, sized per tile. */
+.framework__visual {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(84px, 11vw, 120px);
+  height: clamp(84px, 11vw, 120px);
+  color: var(--color-text-accent);
 }
 
-.framework__num {
-  font-size: var(--font-size-sm);
-  letter-spacing: var(--letter-spacing-wide);
-  color: var(--color-text-muted);
+.framework__tile--1 .framework__visual,
+.framework__tile--4 .framework__visual {
+  width: clamp(160px, 18vw, 220px);
+  height: clamp(160px, 18vw, 220px);
 }
 
-.framework__title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+.framework__visual-svg,
+.framework__visual-img {
+  position: relative;
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.framework__visual-img {
+  width: 72px;
+  height: 72px;
+}
+
+.framework__visual-svg svg {
+  width: 100%;
+  height: 100%;
+}
+
+.framework__tile--1 .framework__visual-svg,
+.framework__tile--4 .framework__visual-svg {
+  width: 96px;
+  height: 96px;
+}
+
+.framework__tile--1 .framework__visual-img,
+.framework__tile--4 .framework__visual-img {
+  width: 150px;
+  height: 150px;
+}
+
+.framework__tile-title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-snug);
   letter-spacing: var(--letter-spacing-tight);
-  transition: color var(--motion-duration-fast) var(--motion-ease);
 }
 
-.framework__row:hover .framework__title {
-  color: var(--color-text-accent);
-}
-
-.framework__arrow {
+.framework__tile--1 .framework__tile-title,
+.framework__tile--4 .framework__tile-title {
   font-size: var(--font-size-xl);
-  color: var(--color-text-accent);
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity var(--motion-duration-fast) var(--motion-ease),
-    transform var(--motion-duration-fast) var(--motion-ease);
 }
 
-.framework__row:hover .framework__arrow {
-  opacity: 1;
-  transform: translateX(0);
+.framework__tile-text {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
-@media (max-width: 720px) {
-  .framework__row {
-    grid-template-columns: 48px 1fr;
-    gap: var(--space-4);
+/* Start Up Initiation still has no supplied image, so it keeps its looping
+   SVG. Capped to 0.01ms by global.css under prefers-reduced-motion, so no
+   separate motion query is needed here. */
+@keyframes framework-rocket-launch {
+  0%, 15% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  85%, 100% { transform: translateY(0); }
+}
+
+.framework__visual-rocket-launch {
+  animation: framework-rocket-launch 2.2s ease-in-out infinite;
+}
+
+@media (max-width: 700px) {
+  .framework__bento {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-auto-rows: 260px;
   }
 
-  .framework__arrow {
-    display: none;
+  .framework__tile--1,
+  .framework__tile--2,
+  .framework__tile--3,
+  .framework__tile--4 {
+    grid-column: 1;
+    grid-row: auto;
   }
 }

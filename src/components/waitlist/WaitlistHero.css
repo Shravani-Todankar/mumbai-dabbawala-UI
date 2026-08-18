@@ -1,0 +1,100 @@
+.wl-hero {
+  padding-block: var(--space-9) var(--space-9);
+}
+
+.wl-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.wl-hero__main {
+  max-width: 640px;
+}
+
+.wl-hero__title {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-base);
+  font-size: var(--wl-display-1);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.wl-hero__mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+.wl-hero__line {
+  display: block;
+}
+
+.wl-dot {
+  color: var(--color-text-accent);
+}
+
+.wl-rule {
+  display: flex;
+  margin-top: var(--space-4);
+  width: 96px;
+}
+
+.wl-rule__bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--color-text-accent);
+  transform-origin: left;
+}
+
+.wl-hero__lead {
+  margin-top: var(--space-6);
+  max-width: 52ch;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.wl-hero__main > div {
+  margin-top: var(--space-7);
+}
+
+.wl-hero__note {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.wl-hero__aside {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .wl-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+
+  .wl-hero__main {
+    max-width: none;
+  }
+
+  .wl-hero__aside {
+    order: -1;
+    max-width: 300px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .wl-hero {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .wl-hero__aside {
+    max-width: 220px;
+  }
+}

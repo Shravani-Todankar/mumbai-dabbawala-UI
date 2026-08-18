@@ -29,9 +29,21 @@
 
   /* Every card is the same width. `.section--slab` already sets the inset, but
      stating it here keeps the three locked together if a fill class ever
-     changes its own margin. */
+     changes its own margin.
+
+     Height is locked too — Process/Services/Stats hold very different
+     amounts of content, and a deck of cards only reads as one if every card
+     in it is the same size. 760px covers the tallest (Process, ~740px at
+     1440px wide) with a little headroom. */
   .stack__item > .section {
     margin-inline: clamp(8px, 1.6vw, 24px);
+    min-height: 760px;
+    display: flex;
+    align-items: center;
     will-change: transform;
+  }
+
+  .stack__item > .section > .container {
+    width: 100%;
   }
 }

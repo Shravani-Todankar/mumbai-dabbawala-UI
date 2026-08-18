@@ -1,0 +1,65 @@
+.wl-final {
+  margin-bottom: var(--space-9);
+}
+
+.wl-final__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-7);
+}
+
+.wl-final__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+/* Short accent tick above each figure — gives the row a measured, instrument
+   -panel rhythm instead of three numbers floating in space. */
+.wl-final__stat-rule {
+  width: 40px;
+  height: 2px;
+  background: var(--color-text-accent);
+}
+
+.wl-final__stat-value {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-base);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-text-primary);
+}
+
+.wl-final__stat-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .wl-final__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+@media (max-width: 700px) {
+  .wl-final__stats {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .wl-final__stat {
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--color-border-muted);
+  }
+
+  .wl-final__stat:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+}

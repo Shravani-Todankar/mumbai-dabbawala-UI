@@ -1,0 +1,168 @@
+.wl-form__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.wl-form__field {
+  position: relative;
+}
+
+.wl-form__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* font-size kept at --font-size-md (16px) at every breakpoint on purpose —
+   anything smaller triggers iOS Safari's focus-zoom, which never un-zooms
+   on blur. */
+.wl-form__input {
+  width: 100%;
+  height: 52px;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-xs);
+  background: var(--color-field-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  transition: border-color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.wl-form__input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.wl-form__field:focus-within .wl-form__input {
+  border-color: var(--color-text-accent);
+}
+
+.wl-form__input[aria-invalid='true'] {
+  border-color: var(--color-danger-border);
+}
+
+.wl-form__input:read-only {
+  opacity: 0.7;
+}
+
+/* Autofill: Chrome paints its own background and never fires React's
+   onChange, so useWaitlistForm reads the input value on mount separately —
+   this just keeps the autofilled text readable against that background. */
+.wl-form__input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-text-primary);
+  transition: background-color 10000s ease-in-out 0s;
+}
+
+.wl-form__submit {
+  position: relative;
+  height: 52px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.wl-form__submit[aria-disabled='true'] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.wl-form__submit-label {
+  position: relative;
+  z-index: 1;
+}
+
+.wl-form__submit-bar {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--color-text-on-accent);
+  opacity: 0.6;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@keyframes wl-loading-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.wl-form[aria-busy='true'] .wl-form__submit-bar {
+  animation: wl-loading-bar 1.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes wl-form-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wl-form__error {
+  margin-top: var(--space-2);
+  min-height: 1.2em;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  animation: wl-form-appear 0.28s var(--motion-ease);
+}
+
+.wl-form__hint {
+  margin-top: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.wl-form__alert {
+  margin-top: var(--space-2);
+  min-height: 1.2em;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}
+
+.wl-form__alert:not(:empty) {
+  animation: wl-form-appear 0.28s var(--motion-ease);
+}
+
+.wl-form__done-title {
+  font-family: var(--font-family-display);
+  font-size: var(--wl-display-3, var(--font-size-2xl));
+  font-weight: var(--font-weight-base);
+}
+
+.wl-form__done-title:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.wl-form__done-body {
+  margin-top: var(--space-3);
+  max-width: 46ch;
+  color: var(--color-text-secondary);
+}
+
+.wl-form__done-receipt {
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .wl-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .wl-form__submit {
+    width: 100%;
+  }
+}

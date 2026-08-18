@@ -1,0 +1,85 @@
+.wl-why__heading {
+  margin-top: var(--space-4);
+  max-width: 20ch;
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--wl-display-1);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* global.css resets `ul` but not `ol`, so this ordered list would otherwise
+   render native "1. 2. 3." markers next to the styled 01/02/03 spans (and
+   carry the default 40px indent). Kept as an <ol> because the order is real —
+   the visible numbers are aria-hidden, so this list is what a screen reader
+   actually counts. */
+.wl-why__rows {
+  margin-top: var(--space-8);
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+
+.wl-why__row {
+  padding-block: clamp(32px, 4.5vw, 56px);
+}
+
+.wl-why__row--rule {
+  border-top: 1px solid var(--color-border-muted);
+}
+
+.wl-why__row-inner {
+  max-width: 640px;
+}
+
+.wl-why__row--left .wl-why__row-inner {
+  margin-right: auto;
+  text-align: left;
+}
+
+.wl-why__row--right .wl-why__row-inner {
+  margin-left: auto;
+  text-align: right;
+}
+
+.wl-why__index {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-accent);
+}
+
+.wl-why__claim {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--wl-display-3);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+
+.wl-why__body-text {
+  margin-top: var(--space-3);
+  max-width: 56ch;
+  color: var(--color-text-secondary);
+}
+
+.wl-why__row--right .wl-why__body-text {
+  margin-left: auto;
+}
+
+@media (max-width: 700px) {
+  .wl-why__row-inner {
+    max-width: none;
+  }
+
+  .wl-why__row--right .wl-why__row-inner,
+  .wl-why__row--right .wl-why__body-text {
+    margin-left: 0;
+  }
+
+  .wl-why__row--right .wl-why__row-inner {
+    text-align: left;
+  }
+}

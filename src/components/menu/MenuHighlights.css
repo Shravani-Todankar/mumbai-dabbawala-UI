@@ -1,0 +1,57 @@
+.menu-highlights__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+  padding: 0;
+  list-style: none;
+}
+
+.menu-highlights__card {
+  text-align: center;
+}
+
+.menu-highlights__image-frame {
+  overflow: hidden;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  /* `contain` can leave empty space around the image (it never crops), so
+     the frame needs its own fill instead of showing the bare page behind it. */
+  background: var(--color-media-placeholder);
+}
+
+.menu-highlights__image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform var(--motion-duration-slow) var(--motion-ease);
+}
+
+.menu-highlights__card:hover .menu-highlights__image-frame img {
+  transform: scale(1.06);
+}
+
+.menu-highlights__type {
+  margin-top: var(--space-5);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.menu-highlights__tagline {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .menu-highlights__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-highlights__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,181 @@
+.blog-post__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  gap: var(--space-9);
+  align-items: start;
+}
+
+.blog-post__article {
+  min-width: 0;
+}
+
+.blog-post__back {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.blog-post__back:hover {
+  color: var(--color-text-accent);
+}
+
+.blog-post__meta {
+  display: block;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+/* Deliberately smaller than the page's usual `.section-title` (4xl) — a
+   full-size display heading read too heavy once the article had a real,
+   multi-paragraph body sitting under it. */
+.blog-post__title {
+  margin-top: var(--space-3);
+  font-family: var(--font-family-display);
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.blog-post__image-frame {
+  overflow: hidden;
+  height: clamp(220px, 40vw, 420px);
+  margin-top: var(--space-7);
+  border-radius: var(--radius-md);
+}
+
+.blog-post__image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-post__body {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-7);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.blog-post__subhead {
+  margin-top: var(--space-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-snug);
+}
+
+/* --- Sidebar --- */
+
+.blog-sidebar {
+  display: grid;
+  gap: var(--space-6);
+  position: sticky;
+  top: var(--space-6);
+}
+
+.blog-sidebar__box {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+}
+
+.blog-sidebar__heading {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.blog-sidebar__menu {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.blog-sidebar__menu a {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  transition: color var(--motion-duration-instant) var(--motion-ease);
+}
+
+.blog-sidebar__menu a:hover {
+  color: var(--color-text-accent);
+}
+
+.blog-sidebar__menu--posts a {
+  display: block;
+  line-height: var(--line-height-snug);
+}
+
+.blog-sidebar__newsletter-title {
+  margin-top: var(--space-3);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+}
+
+.blog-sidebar__newsletter-text {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.blog-sidebar__newsletter-form {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.blog-sidebar__newsletter-form input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-sm);
+  background: var(--color-field-surface, transparent);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.blog-sidebar__newsletter-form input:focus-visible {
+  outline: 2px solid var(--color-text-accent);
+  outline-offset: 2px;
+}
+
+.blog-sidebar__newsletter-form .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.blog-sidebar__newsletter-success {
+  margin-top: var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-accent);
+}
+
+@media (max-width: 900px) {
+  .blog-post__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-sidebar {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-sidebar {
+    grid-template-columns: 1fr;
+  }
+}

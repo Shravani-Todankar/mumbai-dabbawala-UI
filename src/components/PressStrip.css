@@ -5,26 +5,87 @@
 }
 
 .press-strip__label {
-  font-size: var(--font-size-xs);
+  font-size: 1rem;
   letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: hsl(0 100% 100% / var(--glow-core-opacity));
+  font-weight: 700;
 }
 
+/* Bordered tile grid, after the reference Pixel Logo Grid and this project's
+   own `.services__grid`: hairline cell borders instead of loose, unboxed
+   text, so the tiles actually read as a grid rather than scattered words. */
 .press-strip__list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-4) clamp(var(--space-5), 4vw, var(--space-8));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
   margin-top: var(--space-4);
+  background: var(--color-border-muted);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
-/* Reads as a logo row without being one: one weight, one size, muted enough
-   to sit behind the headline in the visual order. */
+/* Each tile is a positioning context for its PixelCanvas — overflow:hidden
+   clips the shimmer to the tile instead of bleeding into its neighbours. */
 .press-strip__item {
-  font-size: clamp(var(--font-size-md), 1.5vw, var(--font-size-xl));
-  font-weight: var(--font-weight-medium);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  padding: var(--space-4);
+  background: var(--color-surface-base);
+  isolation: isolate;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.press-strip__item:hover {
+  background: var(--color-surface-elevated);
+}
+
+@media (max-width: 700px) {
+  .press-strip__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .press-strip__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.press-strip__name {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(var(--font-size-sm), 2.2vw, var(--font-size-lg));
+  font-weight: 800;
   letter-spacing: var(--letter-spacing-tight);
-  color: var(--color-text-muted);
-  white-space: nowrap;
+  color: #ed3237;
+  text-align: center;
+  transition: color var(--motion-duration-fast) var(--motion-ease);
+}
+
+.press-strip__item:hover .press-strip__name {
+  color: var(--color-text-primary);
+}
+
+.press-strip__item .pixel-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.press-strip__item .pixel-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-strip__item .pixel-canvas {
+    display: none;
+  }
 }
